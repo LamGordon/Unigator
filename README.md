@@ -4,11 +4,14 @@
 
 ## Please do the following steps before completing Milestone 0.
 
-Team Lead - Jack Kower, jackkower@gmail.com
+```
+Team Lead - Jack Kower, jackkower@gmail.com 
 Back end Lead - Jorge Landaverde, Jlandaverde@mail.sfsu.edu
-Backend Assistant - Gordon Lam, Lamgordon1998@gmail.com
+Backend Engineer - Gordon Lam, Lamgordon1998@gmail.com
 Front End Lead - Lionel Wong, lionelwong60@yahoo.com
-Front end Assistant - Kevin Huang,kehuang2@gmail.com
-Git Master - Mitul Sovani, mitul.savani1@gmail.com
+Front End Engineer - Kevin Huang,kehuang2@gmail.com
+Git Master - Mitul Savani, mitul.savani1@gmail.com
+```
 
 ## NO code needs to be stored in the root of your repository. You may rename the application folder if you like to your team's application name. But all source code related to your team's application should be stored inside the application folder.
+
