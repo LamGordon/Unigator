@@ -1,0 +1,61 @@
+body{
+  background-color: blueviolet;
+  background-size: cover;
+}
+
+.zone {
+  /* padding:30px 50px;
+  margin:40px 60px; */
+  cursor:pointer;
+  /* display:inline-block; */
+  color:#FFF;
+  font-size:2em;
+  border-radius:4px;
+  border:1px solid #bbb;
+  transition: all 0.3s linear;
+}
+
+.zone:hover {
+  -webkit-box-shadow:rgba(0,0,0,0.8) 0px 5px 15px, inset rgba(0,0,0,0.15) 0px -10px 20px;
+  -moz-box-shadow:rgba(0,0,0,0.8) 0px 5px 15px, inset rgba(0,0,0,0.15) 0px -10px 20px;
+  -o-box-shadow:rgba(0,0,0,0.8) 0px 5px 15px, inset rgba(0,0,0,0.15) 0px -10px 20px;
+  box-shadow:rgba(0,0,0,0.8) 0px 5px 15px, inset rgba(0,0,0,0.15) 0px -10px 20px;
+}
+
+/*https://paulund.co.uk/how-to-create-shiny-css-buttons*/
+/***********************************************************************
+*  Green Background
+**********************************************************************/
+.gold{
+  background: gold; /* Old browsers */
+  background: -moz-linear-gradient(top, gold 0%, gold 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#56B870), color-stop(100%,#a5c956)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, gold 0%,gold 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, gold 0%,gold 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, gold 0%,gold 100%); /* IE10+ */
+  background: linear-gradient(top, gold 0%,gold 100%); /* W3C */
+}
+
+li{
+  display: inline-block;
+  padding: 20px;
+}
+
+a{
+  color: white;
+  text-decoration: none;
+}
+
+.jk{
+  display: block;
+}
+
+.main-nav{
+  display: flex;
+  list-style: none;
+  margin: 0;
+}
+
+.zone: hover{
+
+}
