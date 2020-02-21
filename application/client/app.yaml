@@ -1,0 +1,12 @@
+runtime: nodejs10
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /(.*\..+)$
+  static_files: build/\1
+  upload: build/(.*\..+)$
+
+- url: /.*
+  static_dir: build/index.html
+  upload: build/index.html
