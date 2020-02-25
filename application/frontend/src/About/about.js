@@ -46,15 +46,11 @@ const About = () => {
                         <Route path={`${match.url}/jorge`}>
                             <Jorge/>
                         </Route>
-                        <Route path="/">
-                            <Jorge />
-                        </Route>
-						
 						<Route path={`${match.url}/kevin`}>
                             <Kevin/>
                         </Route>
                         <Route path="/">
-                            <Kevin />
+                            <Jorge />
                         </Route>
                     </Switch>
                 </div>
