@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import './about.css';
 import Jorge from './jorge'
+import Mitul from './mitul';
 
 const About = () => {
     let match = useRouteMatch();
@@ -45,8 +46,8 @@ const About = () => {
                         <Route path={`${match.url}/jorge`}>
                             <Jorge/>
                         </Route>
-                        <Route path="/">
-                            <Jorge />
+                        <Route path={`${match.url}/mitul`}>
+                            <Mitul/>
                         </Route>
                     </Switch>
                 </div>
