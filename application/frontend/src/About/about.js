@@ -9,6 +9,7 @@ import {
 import './about.css';
 import Jorge from './jorge'
 import Mitul from './mitul';
+import Gordon from './gordon'
 
 const About = () => {
     let match = useRouteMatch();
@@ -48,6 +49,9 @@ const About = () => {
                         </Route>
                         <Route path={`${match.url}/mitul`}>
                             <Mitul/>
+                        </Route>
+                        <Route path={`${match.url}/gordon`}>
+                            <Gordon/>
                         </Route>
                         <Route path="/">
                             <Jorge />
