@@ -49,6 +49,9 @@ const About = () => {
                         <Route path={`${match.url}/mitul`}>
                             <Mitul/>
                         </Route>
+                        <Route path="/">
+                            <Jorge />
+                        </Route>
                     </Switch>
                 </div>
             </Router>
