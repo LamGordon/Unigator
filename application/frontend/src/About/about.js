@@ -12,6 +12,7 @@ import Kevin from './kevin';
 import Mitul from './mitul';
 import Gordon from './gordon';
 import Lionel from './lionel';
+import Jack from './jack'
 
 const About = () => {
     let match = useRouteMatch();
@@ -60,6 +61,9 @@ const About = () => {
                         </Route>
                         <Route path={`${match.url}/gordon`}>
                             <Gordon/>
+                        </Route>
+                        <Route path={`${match.url}/jack`}>
+                            <Jack/>
                         </Route>
                         <Route path="/">
                             <Jorge />

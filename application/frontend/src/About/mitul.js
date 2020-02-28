@@ -14,7 +14,7 @@ const Mitul = () => {
                 <h3>Github Master</h3>
                 <h3>msavani@mail.sfsu.edu</h3>
             </div>
-            <div className='desc'>My name is Mitul Savani and I am graduating senior majoring in Computer Science. I am excited about finishing my degree and also looking forward to having a great product</div>
+            <div className='desc'>My name is Mitul Savani and I am graduating senior majoring in Computer Science. I am excited to build this project and help my teammates along the way.</div>
         </div>
     );
 };
