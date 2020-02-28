@@ -7,17 +7,16 @@
 
 # Below is a list of items required. Missing items will causes points to be deducted from multiple milestone submissions.
 
-1. Server URL or IP
-2. SSH username
-3. SSH password or key.
-    <br> If a ssh key is used please upload the key to the credentials folder.
-4. Database URL or IP and port used.
-    <br><strong> NOTE THIS DOES NOT MEAN YOUR DATABASE NEEDS A PUBLIC FACING PORT.</strong> But knowing the IP and port number will help with SSH tunneling into the database. The default port is more than sufficient for this class.
-5. Database username
-6. Database password
+```
+1. Server URL or IP: https://unigatorapp-268904.appspot.com/
+2. SSH username: unigator
+3. SSH password or key. Please look for UNIGATOR_SSH_KEY.pub file.
+4. Database URL or IP and port used: 34.83.126.129
+5. Database username: unigator
+6. Database password: unigator648!
 7. Database name (basically the name that contains all your tables)
-8. Instructions on how to use the above information.
-
+8. Instructions on how to use the above information: To go to the site, use the website URL
+```
 # Most important things to Remember
 ## These values need to kept update to date throughout the semester. <br>
 ## <strong>Failure to do so will result it points be deducted from milestone submissions.</strong><br>
