@@ -11,8 +11,8 @@ const Lionel = () => {
                 <h3>Frontend Lead</h3>
                 <h3>lwong7@mail.sfsu.edu</h3>
             </div>
-            <div className='desc'>My name is Lionel Wong and I am graduating senior majoring in Computer Science.
-                I am excited about finishing my degree and also looking forward to having a great product.</div>
+            <div className='desc'>Hey everyone! I’m Lionel Wong and am currently a senior in computer science.
+                I’m looking forward to working together with you guys in this class. PS have a passion for Initial D Arcade.</div>
         </div>
     );
 };
