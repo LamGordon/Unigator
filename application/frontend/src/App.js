@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import About from './About/about';
 import Home from './Home/home'
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 
 function App() {
