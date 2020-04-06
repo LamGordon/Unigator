@@ -4,6 +4,9 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import styled from 'styled-components';
 
+const is_production = process.env.REACT_APP_IS_PRODUCTION;
+const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
+
 const Form = styled.form`
     display: flex;
     max-width: 50%;
@@ -62,14 +65,14 @@ const Home = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (category === "Categories") {
-            axios.post(`/events`, { name: event })
+            axios.post(`${base_url}/events`, { name: event })
                 .then(res => {
                     setEventsRes(res.data)
                 })
         }
         else if(category !== "Categories") {
             console.log("Category:", category, "Name:", event)
-            axios.get(`/events/${category}`, {
+            axios.get(`${base_url}/events/${category}`, {
                 params: {
                   name: event
                 }
