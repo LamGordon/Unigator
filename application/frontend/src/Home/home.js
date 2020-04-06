@@ -5,7 +5,8 @@ import Button from 'react-bootstrap/Button';
 import styled from 'styled-components';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
-const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
+// const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
+axios.defaults.baseURL = "http://54.193.95.217:3003";
 
 const Form = styled.form`
     display: flex;
@@ -65,20 +66,26 @@ const Home = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (category === "Categories") {
-            axios.post(`${base_url}/events`, { name: event })
+            axios.post(`/events`, { name: event })
                 .then(res => {
                     setEventsRes(res.data)
+                })
+                .catch( err => {
+                    console.log(err)
                 })
         }
         else if(category !== "Categories") {
             console.log("Category:", category, "Name:", event)
-            axios.get(`${base_url}/events/${category}`, {
+            axios.get(`/events/${category}`, {
                 params: {
                   name: event
                 }
               })
                 .then(res => {
                     setEventsRes(res.data)
+                })
+                .catch( err => {
+                    console.log(err)
                 })
         }
     }
