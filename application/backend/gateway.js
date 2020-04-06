@@ -5,7 +5,6 @@ const bodyParser = require('body-parser')
 const app = express()
 const port = 3003
 
-
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.use(bodyParser.json())
@@ -42,10 +41,16 @@ app.get('/events/:category', async (req,res) => {
   try {
     let result;
     let category = req.params.category;
+    let name = req.query.name;
 
     result = await unigatordb.eventsByCategory(category);
-    res.json(result);
-
+    if (name == null) {
+      res.json(result);
+    }
+    else if (name != null){
+      let filtered = result.filter( item  => item.name.toLowerCase().includes(name.toLowerCase()))
+      res.json(filtered);
+    }
   } catch(e) {
     console.log(e);
     res.sendStatus(500);
@@ -53,11 +58,11 @@ app.get('/events/:category', async (req,res) => {
 })
 
 app.post('/login', (req,res) => {
-
+  //TODO: Need to do logic for login
 });
 
 app.post('/register', (req,res) => {
-
+  //TODO: need to do logic for register
 });
 
 
