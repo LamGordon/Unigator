@@ -7,7 +7,14 @@ import {
   Container,
   Card,
 } from "react-bootstrap";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 import styled from "styled-components";
+import logoImage from '../../assets/unigatorLogo.png';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 //const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
@@ -126,7 +133,11 @@ class Events extends React.Component {
     return (
       <Root>
         <Head>
-          <h1>UniGator</h1>
+          <Link to="/">
+            <img className='logo'
+                 src={logoImage}>
+            </img>
+          </Link>
           <div>
             <Form onSubmit={this.handleSubmit}>
               <Search>
@@ -140,8 +151,6 @@ class Events extends React.Component {
               <Button className="submit-btn" variant="primary" type="submit">
                 Submit
               </Button>
-            </Form>
-            <Dropdowns>
               <Dropdown className="my-dropdown">
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
                   {category}
@@ -158,7 +167,7 @@ class Events extends React.Component {
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
-            </Dropdowns>
+            </Form>
           </div>
           <div className="fancy-btn">
             <Button variant="outline-primary">Log in</Button>
