@@ -6,6 +6,7 @@ import {
   Row,
   Container,
   Card,
+  Modal,
 } from "react-bootstrap";
 import {
   BrowserRouter as Router,
@@ -72,6 +73,16 @@ const RenderEvents = styled.div`
 `;
 
 class Events extends React.Component {
+  state = {
+    modalIsOpen: false
+  }
+
+  toggleModal(){
+    this.setState({
+      modalIsOpen: ! this.state.modalIsOpen
+    })
+  }
+
   constructor(props) {
     super(props);
 
@@ -170,10 +181,31 @@ class Events extends React.Component {
             </Form>
           </div>
           <div className="fancy-btn">
-            <Button variant="outline-primary">Log in</Button>
+            <Button variant="outline-primary" onClick={this.toggleModal.bind(this)}>Log in</Button>
             <Button variant="outline-primary">Sign Up</Button>
           </div>
         </Head>
+        <Modal show={this.state.modalIsOpen}>
+          <Modal.Header closeButton onClick={this.toggleModal.bind(this)}>
+            <Modal.Title>Log In</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <div>
+                <b>SFSU Email :</b>
+                <input placeholder="SFSU Email" required/>
+              </div>
+              <div>
+                <b>Password :</b>
+                <input placeholder="Your Password" required/>
+              </div>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary">Log In</Button>
+            <Button variant="secondary" onClick={this.toggleModal.bind(this)}>Cancel</Button>
+          </Modal.Footer>
+        </Modal>
         <RenderEvents>
           <Container>
             <Row className="justify-content-md-center">
