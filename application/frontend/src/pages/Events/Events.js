@@ -7,6 +7,7 @@ import {
   Container,
   Card,
   Modal,
+  Form,
 } from "react-bootstrap";
 import {
   BrowserRouter as Router,
@@ -21,7 +22,7 @@ const is_production = process.env.REACT_APP_IS_PRODUCTION;
 //const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
 axios.defaults.baseURL = "http://54.193.95.217:3003";
 
-const Form = styled.form`
+const Forms = styled.form`
   display: flex;
   max-width: 50%;
   margin: 0 auto;
@@ -74,12 +75,37 @@ const RenderEvents = styled.div`
 
 class Events extends React.Component {
   state = {
-    modalIsOpen: false
+    loginIsOpen: false,
+    signupIsOpen: false
   }
 
-  toggleModal(){
+  toggleLoginModal(){
     this.setState({
-      modalIsOpen: ! this.state.modalIsOpen
+      loginIsOpen: ! this.state.loginIsOpen
+    })
+  }
+
+  toggleSignupModal(){
+    this.setState({
+      signupIsOpen: ! this.state.signupIsOpen
+    })
+  }
+
+  signupToLoginModal(){
+    this.setState({
+      signupIsOpen: ! this.state.signupIsOpen
+    });
+    this.setState({
+      loginIsOpen: ! this.state.loginIsOpen
+    })
+  }
+
+  loginToSignupModal(){
+    this.setState({
+      loginIsOpen: ! this.state.loginIsOpen
+    });
+    this.setState({
+      signupIsOpen: ! this.state.signupIsOpen
     })
   }
 
@@ -150,7 +176,7 @@ class Events extends React.Component {
             </img>
           </Link>
           <div>
-            <Form onSubmit={this.handleSubmit}>
+            <Forms onSubmit={this.handleSubmit}>
               <Search>
                 Search:
                 <input
@@ -178,32 +204,78 @@ class Events extends React.Component {
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
-            </Form>
+            </Forms>
           </div>
           <div className="fancy-btn">
-            <Button variant="outline-primary" onClick={this.toggleModal.bind(this)}>Log in</Button>
-            <Button variant="outline-primary">Sign Up</Button>
+            <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
+            <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
           </div>
         </Head>
-        <Modal show={this.state.modalIsOpen}>
-          <Modal.Header closeButton onClick={this.toggleModal.bind(this)}>
+        <Modal className="Log-in" show={this.state.loginIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+          <Modal.Header closeButton onClick={this.toggleLoginModal.bind(this)}>
             <Modal.Title>Log In</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
-              <div>
-                <b>SFSU Email :</b>
-                <input placeholder="SFSU Email" required/>
-              </div>
-              <div>
-                <b>Password :</b>
-                <input placeholder="Your Password" required/>
-              </div>
+              <Form.Group controlId="formBasicEmail">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control type="email" placeholder="Enter SFSU Email" />
+              </Form.Group>
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" placeholder="Enter Password" />
+              </Form.Group>
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Check type="checkbox" label="Remember me" />
+              </Form.Group>
             </Form>
+            <a style={{color: 'blue'}} onClick={this.loginToSignupModal.bind(this)}>
+              I want to create an account. Sign up here.
+            </a>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary">Log In</Button>
-            <Button variant="secondary" onClick={this.toggleModal.bind(this)}>Cancel</Button>
+            <Button variant="secondary" onClick={this.toggleLoginModal.bind(this)}>Cancel</Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal className="Sign-Up" show={this.state.signupIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+          <Modal.Header closeButton onClick={this.toggleSignupModal.bind(this)}>
+            <Modal.Title>Sign Up</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <a>
+              Note: You must have an SFSU email to sign up for an account on this page.
+              If you do not have an SFSU email, please contact an administrator here:
+            </a>
+            <Link to="/contact"> Contact Us</Link>
+            <Form>
+              <Form.Group controlId="formBasicEmail">
+                <Form.Label>SFSU Email</Form.Label>
+                <Form.Control type="email" placeholder="Enter SFSU Email" />
+                <Form.Text className="text-muted">
+                  We'll never share your email with anyone else.
+                </Form.Text>
+              </Form.Group>
+              <Form.Group controlId="formBasicUsername">
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="username" placeholder="Enter Username" />
+              </Form.Group>
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" placeholder="Enter Password" />
+              </Form.Group>
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control type="password" placeholder="Confirm Password" />
+              </Form.Group>
+            </Form>
+            <a style={{color: 'blue'}} onClick={this.signupToLoginModal.bind(this)}>
+              I already have an account. Log in here.
+            </a>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary">Sign Up</Button>
+            <Button variant="secondary" onClick={this.toggleSignupModal.bind(this)}>Cancel</Button>
           </Modal.Footer>
         </Modal>
         <RenderEvents>
