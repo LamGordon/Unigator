@@ -74,9 +74,20 @@ const RenderEvents = styled.div`
 `;
 
 class Events extends React.Component {
-  state = {
-    loginIsOpen: false,
-    signupIsOpen: false
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      searchEvent: "",
+      category: "Categories",
+      events: [],
+      loginIsOpen: false,
+      signupIsOpen: false,
+      createEventIsOpen: false,
+    };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleInput = this.handleInput.bind(this);
   }
 
   toggleLoginModal(){
@@ -90,36 +101,35 @@ class Events extends React.Component {
       signupIsOpen: ! this.state.signupIsOpen
     })
   }
+  
+  toggleCreateEventModal(){
+    this.setState({
+      createEventIsOpen: ! this.state.createEventIsOpen
+    })
+  }
 
   signupToLoginModal(){
     this.setState({
-      signupIsOpen: ! this.state.signupIsOpen
+      signupIsOpen: ! this.state.signupIsOpen,
+      loginIsOpen: ! this.state.loginIsOpen,
+      createEventIsOpen: !this.state.createEventIsOpen,
     });
-    this.setState({
-      loginIsOpen: ! this.state.loginIsOpen
-    })
   }
 
   loginToSignupModal(){
     this.setState({
-      loginIsOpen: ! this.state.loginIsOpen
+      loginIsOpen: ! this.state.loginIsOpen,
+      signupIsOpen: ! this.state.signupIsOpen,
+      createEventIsOpen: !this.state.createEventIsOpen,
     });
-    this.setState({
-      signupIsOpen: ! this.state.signupIsOpen
-    })
   }
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      searchEvent: "",
-      category: "Categories",
-      events: [],
-    };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleInput = this.handleInput.bind(this);
+  createEventModal(){
+    this.setState({
+      createEventIsOpen: !this.state.createEventIsOpen,
+      loginIsOpen: ! this.state.loginIsOpen,
+      signupIsOpen: ! this.state.signupIsOpen
+    });
   }
 
   handleInput(e) {
@@ -161,6 +171,152 @@ class Events extends React.Component {
     this.setState({ category: value });
   };
 
+  renderLogin = () => {
+    return (
+      <Modal className="Log-in" show={this.state.loginIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+          <Modal.Header closeButton onClick={this.toggleLoginModal.bind(this)}>
+            <Modal.Title>Log In</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="formBasicEmail">
+                <Form.Label>Email address</Form.Label>
+                <Form.Control type="email" placeholder="Enter SFSU Email" />
+              </Form.Group>
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>Password</Form.Label>
+                <Form.Control type="password" placeholder="Enter Password" />
+              </Form.Group>
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Check type="checkbox" label="Remember me" />
+              </Form.Group>
+            </Form>
+            <a style={{color: 'blue'}} onClick={this.loginToSignupModal.bind(this)}>
+              I want to create an account. Sign up here.
+            </a>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary">Log In</Button>
+            <Button variant="secondary" onClick={this.toggleLoginModal.bind(this)}>Cancel</Button>
+          </Modal.Footer>
+        </Modal>
+    )
+  }
+
+  renderSignUp = () => {
+    return(
+      <Modal className="Sign-Up" show={this.state.signupIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal.Header closeButton onClick={this.toggleSignupModal.bind(this)}>
+          <Modal.Title>Sign Up</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <a>
+            Note: You must have an SFSU email to sign up for an account on this page.
+            If you do not have an SFSU email, please contact an administrator here:
+          </a>
+          <Link to="/contact"> Contact Us</Link>
+          <Form>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>SFSU Email</Form.Label>
+              <Form.Control type="email" placeholder="Enter SFSU Email" />
+              <Form.Text className="text-muted">
+                We'll never share your email with anyone else.
+              </Form.Text>
+            </Form.Group>
+            <Form.Group controlId="formBasicUsername">
+              <Form.Label>Username</Form.Label>
+              <Form.Control type="username" placeholder="Enter Username" />
+            </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" placeholder="Enter Password" />
+            </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control type="password" placeholder="Confirm Password" />
+            </Form.Group>
+          </Form>
+          <a style={{color: 'blue'}} onClick={this.signupToLoginModal.bind(this)}>
+            I already have an account. Log in here.
+          </a>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary">Sign Up</Button>
+          <Button variant="secondary" onClick={this.toggleSignupModal.bind(this)}>Cancel</Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+
+  renderCreateEvent = () => {
+    return(
+      <Modal className="Create-Event" show={this.state.createEventIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal.Header closeButton onClick={this.toggleCreateEventModal.bind(this)}>
+          <Modal.Title>Create Event</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formBasicUsername">
+              <Form.Label>Event Name</Form.Label>
+              <Form.Control type="email" placeholder="Name of the event" />
+            </Form.Group>
+            <Form.Group controlId="formBasicUsername">
+              <Form.Label>Description</Form.Label>
+              <Form.Control type="username" placeholder="Enter description..." />
+            </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Location</Form.Label>
+              <Form.Control type="password" placeholder="Enter Location..." />
+            </Form.Group>
+            <Form.Group controlId="formBasicCheckbox">
+              <Form.Label>Admission</Form.Label>
+              <Form.Check type="checkbox" label="Free"/>
+              <Form.Check type="checkbox" label="Paid"/>
+              </Form.Group>
+          </Form>
+          <div className="mb-3">
+            <Form.File id="formcheck-api-regular">
+              <Form.File.Label>Choose picture</Form.File.Label>
+              <Form.File.Input />
+            </Form.File>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary">Submit Event</Button>
+        </Modal.Footer>
+      </Modal>
+    )
+  }
+
+  renderEvents = () => {
+    const { events } = this.state;
+    return (
+      <RenderEvents>
+          <Container>
+            <Row className="justify-content-md-center">
+              {events.map((item) => (
+                <Card style={{ width: "18rem" }}>
+                  <Card.Img
+                    variant="top"
+                    src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
+                  />
+                  <Card.Body>
+                    <Card.Title>{item.name}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">
+                      {item.location}
+                    </Card.Subtitle>
+                    <Card.Text>{item.desc}</Card.Text>
+										<Button variant="link">Share</Button>
+                    <Button variant="link">Learn More</Button>
+                  </Card.Body>
+                </Card>
+              ))}
+            </Row>
+          </Container>
+        </RenderEvents>
+    )
+  }
+
   render() {
     console.log("------------------------------------");
     console.log("State: ", this.state);
@@ -172,7 +328,7 @@ class Events extends React.Component {
         <Head>
           <Link to="/">
             <img className='logo'
-                 src={logoImage}>
+              src={logoImage}>
             </img>
           </Link>
           <div>
@@ -207,100 +363,15 @@ class Events extends React.Component {
             </Forms>
           </div>
           <div className="fancy-btn">
+            <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>
             <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
             <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
           </div>
         </Head>
-        <Modal className="Log-in" show={this.state.loginIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
-          <Modal.Header closeButton onClick={this.toggleLoginModal.bind(this)}>
-            <Modal.Title>Log In</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control type="email" placeholder="Enter SFSU Email" />
-              </Form.Group>
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Enter Password" />
-              </Form.Group>
-              <Form.Group controlId="formBasicCheckbox">
-                <Form.Check type="checkbox" label="Remember me" />
-              </Form.Group>
-            </Form>
-            <a style={{color: 'blue'}} onClick={this.loginToSignupModal.bind(this)}>
-              I want to create an account. Sign up here.
-            </a>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary">Log In</Button>
-            <Button variant="secondary" onClick={this.toggleLoginModal.bind(this)}>Cancel</Button>
-          </Modal.Footer>
-        </Modal>
-        <Modal className="Sign-Up" show={this.state.signupIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
-          <Modal.Header closeButton onClick={this.toggleSignupModal.bind(this)}>
-            <Modal.Title>Sign Up</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <a>
-              Note: You must have an SFSU email to sign up for an account on this page.
-              If you do not have an SFSU email, please contact an administrator here:
-            </a>
-            <Link to="/contact"> Contact Us</Link>
-            <Form>
-              <Form.Group controlId="formBasicEmail">
-                <Form.Label>SFSU Email</Form.Label>
-                <Form.Control type="email" placeholder="Enter SFSU Email" />
-                <Form.Text className="text-muted">
-                  We'll never share your email with anyone else.
-                </Form.Text>
-              </Form.Group>
-              <Form.Group controlId="formBasicUsername">
-                <Form.Label>Username</Form.Label>
-                <Form.Control type="username" placeholder="Enter Username" />
-              </Form.Group>
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Enter Password" />
-              </Form.Group>
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control type="password" placeholder="Confirm Password" />
-              </Form.Group>
-            </Form>
-            <a style={{color: 'blue'}} onClick={this.signupToLoginModal.bind(this)}>
-              I already have an account. Log in here.
-            </a>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary">Sign Up</Button>
-            <Button variant="secondary" onClick={this.toggleSignupModal.bind(this)}>Cancel</Button>
-          </Modal.Footer>
-        </Modal>
-        <RenderEvents>
-          <Container>
-            <Row className="justify-content-md-center">
-              {events.map((item) => (
-                <Card style={{ width: "18rem" }}>
-                  <Card.Img
-                    variant="top"
-                    src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
-                  />
-                  <Card.Body>
-                    <Card.Title>{item.name}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                      {item.location}
-                    </Card.Subtitle>
-                    <Card.Text>{item.desc}</Card.Text>
-										<Button variant="link">Share</Button>
-                    <Button variant="link">Learn More</Button>
-                  </Card.Body>
-                </Card>
-              ))}
-            </Row>
-          </Container>
-        </RenderEvents>
+        {this.renderLogin()}
+        {this.renderSignUp()}
+        {this.renderCreateEvent()}
+        {this.renderEvents()}
       </Root>
     );
   }
