@@ -3,6 +3,8 @@ import "./App.css";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import About from "./pages/About/about";
 import Events from "./pages/Events/Events";
+import Profile from "./pages/Profile/Profile";
+import EventDetail from "./pages/EventDetail/EventDetail";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Routes = (props) => {
@@ -28,6 +30,12 @@ const Routes = (props) => {
           </Route>
           <Route path="/home">
             <Events />
+          </Route>
+          <Route path="/profile">
+            <Profile />
+          </Route>
+          <Route path="/eventdetail">
+            <EventDetail />
           </Route>
         </Switch>
       </div>

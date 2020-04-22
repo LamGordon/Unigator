@@ -3,11 +3,14 @@ import axios from "axios";
 import {
   Dropdown,
   Button,
+  ButtonGroup,
+  ButtonToolbar,
   Row,
   Container,
   Card,
   Modal,
   Form,
+  Carousel,
 } from "react-bootstrap";
 import {
   BrowserRouter as Router,
@@ -84,6 +87,7 @@ class Events extends React.Component {
       loginIsOpen: false,
       signupIsOpen: false,
       createEventIsOpen: false,
+      carouselShow: true,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -112,7 +116,6 @@ class Events extends React.Component {
     this.setState({
       signupIsOpen: ! this.state.signupIsOpen,
       loginIsOpen: ! this.state.loginIsOpen,
-      createEventIsOpen: !this.state.createEventIsOpen,
     });
   }
 
@@ -120,16 +123,27 @@ class Events extends React.Component {
     this.setState({
       loginIsOpen: ! this.state.loginIsOpen,
       signupIsOpen: ! this.state.signupIsOpen,
-      createEventIsOpen: !this.state.createEventIsOpen,
     });
   }
 
-  createEventModal(){
+  // createEventModal(){
+  //   this.setState({
+  //     createEventIsOpen: !this.state.createEventIsOpen,
+  //     loginIsOpen: ! this.state.loginIsOpen,
+  //     signupIsOpen: ! this.state.signupIsOpen
+  //   });
+  // }
+
+  carouselHide(){
     this.setState({
-      createEventIsOpen: !this.state.createEventIsOpen,
-      loginIsOpen: ! this.state.loginIsOpen,
-      signupIsOpen: ! this.state.signupIsOpen
-    });
+      carouselShow: false
+    })
+  }
+
+  carouselShow(){
+    this.setState({
+      carouselShow: true
+    })
   }
 
   handleInput(e) {
@@ -191,9 +205,9 @@ class Events extends React.Component {
                 <Form.Check type="checkbox" label="Remember me" />
               </Form.Group>
             </Form>
-            <a style={{color: 'blue'}} onClick={this.loginToSignupModal.bind(this)}>
+            <Button style={{color: 'blue', background: 'none', border: 'none'}} onClick={this.loginToSignupModal.bind(this)}>
               I want to create an account. Sign up here.
-            </a>
+            </Button>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="primary">Log In</Button>
@@ -236,9 +250,9 @@ class Events extends React.Component {
               <Form.Control type="password" placeholder="Confirm Password" />
             </Form.Group>
           </Form>
-          <a style={{color: 'blue'}} onClick={this.signupToLoginModal.bind(this)}>
+          <Button style={{color: 'blue', background: 'none', border: 'none'}} onClick={this.signupToLoginModal.bind(this)}>
             I already have an account. Log in here.
-          </a>
+          </Button>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary">Sign Up</Button>
@@ -272,7 +286,8 @@ class Events extends React.Component {
               <Form.Label>Admission</Form.Label>
               <Form.Check type="checkbox" label="Free"/>
               <Form.Check type="checkbox" label="Paid"/>
-              </Form.Group>
+              <Form.Control type="basic" placeholder="Enter Price..." />
+            </Form.Group>
           </Form>
           <div className="mb-3">
             <Form.File id="formcheck-api-regular">
@@ -283,8 +298,59 @@ class Events extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary">Submit Event</Button>
+          <Button variant="secondary" onClick={this.toggleCreateEventModal.bind(this)}>Cancel</Button>
         </Modal.Footer>
       </Modal>
+    )
+  }
+
+  renderCarousel = () => {
+    const { events } = this.state;
+    const { carouselShow } = this.state;
+    return (
+        <div>
+          {carouselShow
+            ?<div>
+              <h1 style={{textAlign: 'center'}}>Featured Events</h1>
+              <Carousel>
+                <Carousel.Item>
+                  <img
+                      className="d-block w-100"
+                      src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
+                      alt="First slide"
+                  />
+                  <Carousel.Caption>
+                    <h3>Mobile dev 101</h3>
+                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                  </Carousel.Caption>
+                </Carousel.Item>
+                <Carousel.Item>
+                  <img
+                      className="d-block w-100"
+                      src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
+                      alt="Third slide"
+                  />
+                  <Carousel.Caption>
+                    <h3>Second slide label</h3>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                  </Carousel.Caption>
+                </Carousel.Item>
+                <Carousel.Item>
+                  <img
+                      className="d-block w-100"
+                      src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
+                      alt="Third slide"
+                  />
+                  <Carousel.Caption>
+                    <h3>Third slide label</h3>
+                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+                  </Carousel.Caption>
+                </Carousel.Item>
+              </Carousel>
+            </div>
+              : null
+            }
+        </div>
     )
   }
 
@@ -307,7 +373,9 @@ class Events extends React.Component {
                     </Card.Subtitle>
                     <Card.Text>{item.desc}</Card.Text>
 										<Button variant="link">Share</Button>
+                    <Link to="/eventdetail">
                     <Button variant="link">Learn More</Button>
+                    </Link>
                   </Card.Body>
                 </Card>
               ))}
@@ -326,10 +394,12 @@ class Events extends React.Component {
     return (
       <Root>
         <Head>
-          <Link to="/">
-            <img className='logo'
-              src={logoImage}>
-            </img>
+          <Link to="/home">
+            <Button style={{background: 'none', border: 'none'}} onClick={this.carouselShow.bind(this)}>
+              <img className='logo'
+                src={logoImage}>
+              </img>
+            </Button>
           </Link>
           <div>
             <Forms onSubmit={this.handleSubmit}>
@@ -341,7 +411,7 @@ class Events extends React.Component {
                   onChange={this.handleInput}
                 />
               </Search>
-              <Button className="submit-btn" variant="primary" type="submit">
+              <Button className="submit-btn" variant="primary" type="submit" onClick={this.carouselHide.bind(this)}>
                 Submit
               </Button>
               <Dropdown className="my-dropdown">
@@ -366,11 +436,15 @@ class Events extends React.Component {
             <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>
             <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
             <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
+            <Link to="/profile">
+              <Button variant="outline-primary">My profile</Button>
+            </Link>
           </div>
         </Head>
         {this.renderLogin()}
         {this.renderSignUp()}
         {this.renderCreateEvent()}
+        {this.renderCarousel()}
         {this.renderEvents()}
       </Root>
     );
