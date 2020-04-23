@@ -6,8 +6,8 @@ import {
   Route,
   Link
 } from "react-router-dom";
-import About from './About/about';
-import Home from './Home/home'
+import About from './pages/About/about';
+import Events from './pages/Events/Events';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -20,7 +20,7 @@ function App() {
             <nav>
               <ul className="navbar">
                 <li>
-                  <Link to="/">Home</Link>
+                  <Link to="/">Events</Link>
                 </li>
                 <li>
                   <Link to="/about">About</Link>
@@ -35,7 +35,7 @@ function App() {
                 <About/>
               </Route>
               <Route path="/">
-                <Home />
+                <Events />
               </Route>
             </Switch>
           </div>
