@@ -9,40 +9,37 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 const Routes = (props) => {
   return (
-    <Router {...props}>
-      <div>
-        <nav>
-          <ul className="navbar">
-            <li>
-              <Link to="/home">Events</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-          </ul>
-        </nav>
+      <Router {...props}>
+        <div>
+          <nav>
+            <ul className="navbar">
+              <li>
+                <Link to="/home">Home</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+            </ul>
+          </nav>
 
-        {/* A <Switch> looks through its children <Route>s and
+          {/* A <Switch> looks through its children <Route>s and
              renders the first one that matches the current URL. */}
-        <Switch>
-          <Route path="/about">
-            <About />
-          </Route>
-          {/*<Route path="/">*/}
-          {/*  <Events />*/}
-          {/*</Route>*/}
-          <Route path="/home">
-            <Events />
-          </Route>
-          <Route path="/profile">
-            <Profile />
-          </Route>
-          <Route path="/eventdetail">
-            <EventDetail />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+          <Switch>
+            <Route path="/about">
+              <About />
+            </Route>
+            <Route path="/home">
+              <Events />
+            </Route>
+            <Route path="/profile">
+              <Profile />
+            </Route>
+            <Route path="/eventdetail">
+              <EventDetail />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
   );
 };
 
