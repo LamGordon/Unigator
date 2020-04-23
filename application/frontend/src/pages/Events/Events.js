@@ -6,6 +6,7 @@ import {
   ButtonGroup,
   ButtonToolbar,
   Row,
+  Col,
   Container,
   Card,
   Modal,
@@ -305,52 +306,60 @@ class Events extends React.Component {
   }
 
   renderCarousel = () => {
-    const { events } = this.state;
     const { carouselShow } = this.state;
     return (
-        <div>
+        <Container>
           {carouselShow
             ?<div>
               <h1 style={{textAlign: 'center'}}>Featured Events</h1>
               <Carousel>
                 <Carousel.Item>
-                  <img
-                      className="d-block w-100"
-                      src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
-                      alt="First slide"
-                  />
+                  <Link to="/eventdetail">
+                    <img
+                        className="d-block w-100"
+                        src="https://qph.fs.quoracdn.net/main-qimg-9576272f4a2fe3344b1a774db1d7650b-c"
+                        alt="First slide"
+                    />
+                  </Link>
                   <Carousel.Caption>
-                    <h3>Mobile dev 101</h3>
-                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                    <h3 style={{textShadow: '2px 2px #000000'}}>Mobile dev 101</h3>
+                    <p style={{textShadow: '2px 2px #000000'}}>Thornton Hall</p>
+                    <p style={{textShadow: '2px 2px #000000'}}>Lets learn how to create a mobile app</p>
                   </Carousel.Caption>
                 </Carousel.Item>
                 <Carousel.Item>
-                  <img
-                      className="d-block w-100"
-                      src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
-                      alt="Third slide"
-                  />
+                  <Link to="/eventdetail">
+                    <img
+                        className="d-block w-100"
+                        src="https://www.nextavenue.org/wp-content/uploads/2017/05/My-Foray-Into-Watercolors_64633113.jpg"
+                        alt="Third slide"
+                    />
+                  </Link>
                   <Carousel.Caption>
-                    <h3>Second slide label</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    <h3 style={{textShadow: '2px 2px #000000'}}>Art 101</h3>
+                    <p style={{textShadow: '2px 2px #000000'}}>Cesar Chavez Building</p>
+                    <p style={{textShadow: '2px 2px #000000'}}>Let learn how to use water color</p>
                   </Carousel.Caption>
                 </Carousel.Item>
                 <Carousel.Item>
-                  <img
-                      className="d-block w-100"
-                      src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
-                      alt="Third slide"
-                  />
+                  <Link to="/eventdetail">
+                    <img
+                        className="d-block w-100"
+                        src="https://www.ed2go.com/binaries/content/gallery/ed2go/products/17428.jpg"
+                        alt="Third slide"
+                    />
+                  </Link>
                   <Carousel.Caption>
-                    <h3>Third slide label</h3>
-                    <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+                    <h3 style={{textShadow: '2px 2px #000000'}}>Resume 101</h3>
+                    <p style={{textShadow: '2px 2px #000000'}}>J. Paul Leonard Library</p>
+                    <p style={{textShadow: '2px 2px #000000'}}>Resume 101</p>
                   </Carousel.Caption>
                 </Carousel.Item>
               </Carousel>
             </div>
               : null
             }
-        </div>
+        </Container>
     )
   }
 
@@ -395,11 +404,7 @@ class Events extends React.Component {
       <Root>
         <Head>
           <Link to="/home">
-            <Button style={{background: 'none', border: 'none'}} onClick={this.carouselShow.bind(this)}>
-              <img className='logo'
-                src={logoImage}>
-              </img>
-            </Button>
+            <img className='logo' src={logoImage} onClick={this.carouselShow.bind(this)}></img>
           </Link>
           <div>
             <Forms onSubmit={this.handleSubmit}>

@@ -28,6 +28,9 @@ const Routes = (props) => {
           <Route path="/about">
             <About />
           </Route>
+          {/*<Route path="/">*/}
+          {/*  <Events />*/}
+          {/*</Route>*/}
           <Route path="/home">
             <Events />
           </Route>
