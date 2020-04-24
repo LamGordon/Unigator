@@ -3,10 +3,13 @@ import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import styled from 'styled-components';
+import Card from 'react-bootstrap/Card';
+import logo from "../logo.svg";
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 // const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
-axios.defaults.baseURL = "http://54.193.95.217:3003";
+// axios.defaults.baseURL = "http://54.193.95.217:3003";
+axios.defaults.baseURL = "http://localhost:3003";
 
 const Form = styled.form`
     display: flex;
@@ -55,7 +58,10 @@ const Dropdowns = styled.div`
 `
 
 const Events = styled.div`
-    text-align: left;
+    align-items: left;
+    display: flex;
+    margin-top: 25px;
+    flex-wrap: wrap;
 `
 
 const Home = () => {
@@ -70,24 +76,37 @@ const Home = () => {
                 .then(res => {
                     setEventsRes(res.data)
                 })
-                .catch( err => {
+                .catch(err => {
                     console.log(err)
                 })
         }
-        else if(category !== "Categories") {
+        else if (category !== "Categories") {
             console.log("Category:", category, "Name:", event)
             axios.get(`/events/${category}`, {
                 params: {
-                  name: event
+                    name: event
                 }
-              })
+            })
                 .then(res => {
                     setEventsRes(res.data)
                 })
-                .catch( err => {
+                .catch(err => {
                     console.log(err)
                 })
         }
+    }
+
+    function timeConverter(dateString){
+        var a = new Date(dateString).getTime();
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = a.getFullYear();
+        var month = months[a.getMonth()];
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes();
+        var sec = a.getSeconds();
+        var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+        return time;
     }
 
     const onClickHandler = category => {
@@ -126,9 +145,21 @@ const Home = () => {
                 </Dropdowns>
             </div>
             <Events>
-                <pre>
-                    {JSON.stringify(eventsRes, null, 2)}
-                </pre>
+                {eventsRes.map(event => {
+                    return (
+                        <Card style={{ width: '16rem', margin: '16px'}}>
+                            <Card.Img variant="top" src={logo}/>
+                            <Card.Body>
+                                <Card.Title>{event.name}</Card.Title>
+                                <Card.Subtitle className="mb-2 text-muted">{event.date.slice(0,10)}</Card.Subtitle>
+                                <Card.Text>
+                                    {event.desc}
+                                </Card.Text>
+                                <Button variant="primary">More Info</Button>
+                            </Card.Body>
+                        </Card>
+                    )
+                })}
             </Events>
         </Root>
     );
