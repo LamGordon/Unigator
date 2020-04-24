@@ -442,6 +442,9 @@ class Events extends React.Component {
             <Link to="/profile">
               <Button variant="outline-primary">My profile</Button>
             </Link>
+            <Link to="/store">
+              <Button variant="outline-primary">Store</Button>
+            </Link>
           </div>
         </Head>
         {this.renderLogin()}

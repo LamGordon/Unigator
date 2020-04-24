@@ -5,6 +5,7 @@ import About from "./pages/About/about";
 import Events from "./pages/Events/Events";
 import Profile from "./pages/Profile/Profile";
 import EventDetail from "./pages/EventDetail/EventDetail";
+import Store from "./pages/Store/Store";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Routes = (props) => {
@@ -36,6 +37,9 @@ const Routes = (props) => {
             </Route>
             <Route path="/eventdetail">
               <EventDetail />
+            </Route>
+            <Route path="/store">
+              <Store />
             </Route>
           </Switch>
         </div>
