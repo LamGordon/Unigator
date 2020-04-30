@@ -1,7 +1,9 @@
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
+const cookieparser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
 
-const saltRounts = 10;
+const saltRounds = 5;
 
 // Database cofigs
 const db = mysql.createPool({
@@ -75,36 +77,50 @@ unigatordb.eventsByCategory = (category) => {
 }
 
 unigatordb.createAccount = async (email, password) => {
-    password = bcrypt.hashSync(password, saltRounts);
-    db.query(`INSERT INTO unigator.Account (email, password) VALUES(?,?)`,
-        [email, password], (err, results) => {
-            if (err) {
-                return -1;
-            } else {
-                console.log("results in createAccount", results)
-                return results.insertId;
-            }
-        });
+    return new Promise(async (resolve, reject) => {
+        password = await bcrypt.hash(password, saltRounds);
+        db.query(`INSERT INTO unigator.Account (email, password) VALUES(?,?)`,
+            [email, password], (err, results) => {
+                if (err) {
+                    reject({ error: "Email already in use" });
+                } else {
+                    resolve(results.insertId);
+                }
+            });
+    })
 }
-
 
 unigatordb.registerUser = (supervisor = 0, name, desc = "Empty", year, email, password) => {
     return new Promise(async (resolve, reject) => {
-        acc_id = await unigatordb.createAccount(email, password);
-        console.log("account id in registerUser", acc_id)
-        if (acc_id == -1) {
-            console.log("Error in registeredUser - could not create account");
-            return reject("Error in registeredUser - could not create account");
-        } else {
+        try {
+            acc_id = await unigatordb.createAccount(email, password);
             db.query(`INSERT INTO unigator.User (supervisor, name, description, year, account_id) VALUES(?,?,?,?,?)`,
                 [supervisor, name, desc, year, acc_id], (err, results) => {
                     if (err) {
                         //TODO: remove Account
-                        return reject(err);
+                        reject(err);
                     }
-                    return resolve({ message: "User created successfully" })
+                    resolve({ message: "User created successfully" })
                 })
+        } catch (e) {
+            reject(e)
         }
+    });
+}
+
+unigatordb.loginUser = (email, password) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.Account WHERE email = ?`, [email], async (err, result) => {
+            let passwordMatch = await bcrypt.compare(password, result[0].password)
+            if (err || !passwordMatch) {
+                return reject({ error: "Invalid Email or password" });
+            }
+            let token = jwt.sign({account_id: result[0].acc_id}, 'CookieSecretUserAut', {expiresIn: 86400});
+            return resolve({ 
+                message: "User login successfully",
+                newToken: token
+            })
+        })
     });
 }
 
