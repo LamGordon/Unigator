@@ -124,6 +124,76 @@ unigatordb.loginUser = (email, password) => {
     });
 }
 
+unigatordb.UserInfo = (acc_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.User WHERE acc_id = ?`, [acc_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+unigatordb.getUserId = (acc_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT U.user_id FROM unigator.User U WHERE acc_id = ?`, [acc_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results.user_id);
+        })
+    });
+}
+
+unigatordb.getPointShop = () => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.PointShop`, [], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+unigatordb.getAllPurchasedItems = (acc_id) => {
+    return new Promise((resolve, reject) => {
+        let user_id = unigatordb.getUserId(acc_id);
+        db.query(`SELECT * FROM unigator.PurchasedItems WHERE user_id = ?`, [], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+//no check if item is already purchased yet, either implement here or in frontend.
+unigatordb.buyItem = (acc_id, item_id, item_cost) => {          //should be used as onClick button event
+    return new Promise((resolve, reject) => {
+        try {
+        if (acc_id==null) {
+            return reject({ error: "Please login if you wish to make a purchase." });
+        }
+        let current_user_info = await unigatordb.UserInfo(acc_id);
+        let user_id = current_user_info.user_id;
+        let user_pointBalance = current_user_info.point_balance; //added this into the database under User table.
+        if (user_pointBalance < item_cost) {        //check if user has enough points to make purchase.
+            return reject({ error: "Insufficient amount of points."});
+        }
+        db.query(`INSERT INTO unigator.PurchasedItems (user_id, item_id) VALUES(?,?)`, [user_id, item_id, ], (err, results) => {
+            if (err) {
+                reject(err);
+            }
+            resolve({ message: "Purchase Sucessful" })
+        })
+        } catch (e) {
+            reject(e)
+        }
+    });
+}
+
 unigatordb.tempalte = () => {
     return new Promise((resolve, reject) => {
         db.query(``, [], (err, results) => {
