@@ -146,7 +146,7 @@ unigatordb.getUserId = (acc_id) => {
     });
 }
 
-unigatordb.getPointShop = () => {
+unigatordb.getPointShop = () => {   //retrives all items purchasable in points shop
     return new Promise((resolve, reject) => {
         db.query(`SELECT * FROM unigator.PointShop`, [], (err, results) => {
             if (err) {
@@ -157,10 +157,10 @@ unigatordb.getPointShop = () => {
     });
 }
 
-unigatordb.getAllPurchasedItems = (acc_id) => {
+unigatordb.getAllPurchasedItems = (acc_id) => { //retrives id of items purchased from the points shop by current user, also if enabled or not
     return new Promise((resolve, reject) => {
         let user_id = unigatordb.getUserId(acc_id);
-        db.query(`SELECT * FROM unigator.PurchasedItems WHERE user_id = ?`, [], (err, results) => {
+        db.query(`SELECT * FROM unigator.PurchasedItems P WHERE user_id = ?`, [user_id], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -170,7 +170,7 @@ unigatordb.getAllPurchasedItems = (acc_id) => {
 }
 
 //no check if item is already purchased yet, either implement here or in frontend.
-unigatordb.buyItem = (acc_id, item_id, item_cost) => {          //should be used as onClick button event
+unigatordb.PointShopBuyItem = (acc_id, item_id, item_cost) => {          //used to buy an item from the points shop for current user
     return new Promise((resolve, reject) => {
         try {
         if (acc_id==null) {
@@ -182,15 +182,58 @@ unigatordb.buyItem = (acc_id, item_id, item_cost) => {          //should be used
         if (user_pointBalance < item_cost) {        //check if user has enough points to make purchase.
             return reject({ error: "Insufficient amount of points."});
         }
-        db.query(`INSERT INTO unigator.PurchasedItems (user_id, item_id) VALUES(?,?)`, [user_id, item_id, ], (err, results) => {
+        db.query(`INSERT INTO unigator.PurchasedItems (user_id, item_id, enabled) VALUES(?,?,0)`, [user_id, item_id], (err, results) => {
             if (err) {
-                reject(err);
+                reject({ error: "System was unable to add this item to your account." });
             }
-            resolve({ message: "Purchase Sucessful" })
+            resolve({ message: "Purchase Sucessful: The item you selexted has been added to your account" })
+        })
+        db.query(`UPDATE unigator.User U SET U.point_balance = (U.point_balance-?) WHERE U.user_id = ?`, [item_cost, user_id], (err, results) => {
+            if (err) {
+                reject({ error: "System was unable to deduct the necessary points from your balance." });
+            }
+            return resolve({ message: "Points have now been deducted from your balance." })
         })
         } catch (e) {
             reject(e)
         }
+    });
+}
+
+unigatordb.enablePointShopItem = (acc_id, item_id) => {     //enables item of choice for user
+    return new Promise((resolve, reject) => {
+        let user_id = unigatordb.getUserId(acc_id);
+        unigatordb.disableAllPointShopItems(acc_id);
+        db.query(`UPDATE unigator.PurchasedItems P SET P.enabled = 1 WHERE P.user_id = ? AND P.item_id = ?  `, [user_id, item_id], (err, results) => {
+            if (err) {
+                return reject({ error: "System was unable to enable this item." });
+            }
+            return resolve({ message: "The selected item has sucessfully been enabled." });
+        })
+    });
+}
+
+unigatordb.disablePointShopItem = (acc_id, item_id) => {    //de-enables item of choice for user
+    return new Promise((resolve, reject) => {
+        let user_id = unigatordb.getUserId(acc_id);
+        db.query(`UPDATE unigator.PurchasedItems P SET P.enabled = 0 WHERE P.user_id = ? AND P.item_id = ?  `, [user_id, item_id], (err, results) => {
+            if (err) {
+                return reject({ error: "System was unable to disable this item." });
+            }
+            return resolve({ message: "The selected item has sucessfully been disabled." });
+        })
+    });
+}
+
+unigatordb.disableAllPointShopItems = (acc_id) => {    //de-enables all point shop items for current user
+    return new Promise((resolve, reject) => {
+        let user_id = unigatordb.getUserId(acc_id);
+        db.query(`UPDATE unigator.PurchasedItems P SET P.enabled = 0 WHERE user_id = ?`, [user_id], (err, results) => {
+            if (err) {
+                return reject({ error: "System was unable to disable all items." });
+            }
+            return resolve({ message: "All items have been sucessfully been disabled." });
+        })
     });
 }
 
