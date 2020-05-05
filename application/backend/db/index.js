@@ -38,17 +38,6 @@ unigatordb.eventsByDate = (date) => {
     });
 }
 
-unigatordb.category = () => {
-    return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM unigator.Category`, (err, results) => {
-            if (err) {
-                return reject(err);
-            }
-            return resolve(results)
-        })
-    });
-}
-
 unigatordb.eventInsert = (name, location, desc, date, time) => {
     return new Promise((resolve, reject) => {
         db.query(`INSERT INTO unigator.Event  (event_id, name, location, desc, date, time) VALUES = ?`,
@@ -172,4 +161,15 @@ module.exports = unigatordb;
 //     } catch(e) {
 //         // rollback
 //     }
+// }
+
+// unigatordb.category = () => {
+//     return new Promise((resolve, reject) => {
+//         db.query(`SELECT * FROM unigator.Category`, (err, results) => {
+//             if (err) {
+//                 return reject(err);
+//             }
+//             return resolve(results)
+//         })
+//     });
 // }
