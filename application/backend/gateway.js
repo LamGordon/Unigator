@@ -17,31 +17,41 @@ app.use(cors());
 app.use((req, res, next) => {
   if (req.cookies['Token']) {
     var decoded = jwt.verify(req.cookies['Token'], 'CookieSecretUserAuth');
-    req.account_id = decoded.account_id;
-  } 
+    req.user_id = decoded.user_id;
+  }
   next();
 })
-
-app.get('/', (req, res) => res.send('Hello World!'))
 
 app.post('/events', async (req, res) => {
   try {
     let result;
     date = req.body.date;
     let name = req.body.name;
+    let pastEvent = req.body.pastEvent;
 
-    if (date == null && name == null) {
-      result = await unigatordb.events();
-      res.json(result);
-    }
-    else if (date != null && name == null) {
-      result = await unigatordb.eventsByDate(date);
-      res.json(result);
-    }
-    else if (name != null) {
-      let results = await unigatordb.events();
-      let filtered = results.filter(result => result.name.toLowerCase().includes(name.toLowerCase()))
-      res.json(filtered);
+    if (pastEvent) {
+      result = await unigatordb.pastEvents();
+      if (name == null) {
+        res.json(result);
+      }
+      else {
+        let filtered = result.filter(item => item.name.toLowerCase().includes(name.toLowerCase()))
+        res.json(filtered);
+      }
+    } else {
+      if (date == null && name == null) {
+        result = await unigatordb.events();
+        res.json(result);
+      }
+      else if (date != null && name == null) {
+        result = await unigatordb.eventsByDate(date);
+        res.json(result);
+      }
+      if (name != null) {
+        let results = await unigatordb.events();
+        let filtered = results.filter(result => result.name.toLowerCase().includes(name.toLowerCase()))
+        res.json(filtered);
+      }
     }
   } catch (e) {
     console.log(e);
@@ -70,7 +80,6 @@ app.get('/events/:category', async (req, res) => {
 })
 
 app.post('/login', async (req, res) => {
-  //TODO: Need to do logic for login
   try {
     let result;
     let email = req.body.email;
@@ -78,9 +87,8 @@ app.post('/login', async (req, res) => {
 
     if (email != null && password != null) {
       result = await unigatordb.loginUser(email, password)
-      console.log(result);
-      res.cookie('Token', result.newToken, {maxAge: 86400});
-      res.json({message: result.message});
+      res.cookie('Token', result.newToken, { maxAge: 86400 });
+      res.json({ message: result.message });
     }
   } catch (e) {
     console.log(e);
@@ -88,8 +96,17 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post('/logout', async (req, res) => {
+  try {
+    res.clearCookie("Token");
+    res.json({ message: "User logout successful" });
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
 app.post('/register', async (req, res) => {
-  //TODO: need to do logic for register
   try {
     let result;
     let name = req.body.name;
