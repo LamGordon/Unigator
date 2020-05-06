@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
-const cookieparser = require("cookie-parser")
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const dateFormat = require("dateformat");
 
 const saltRounds = 5;
 
@@ -18,7 +18,18 @@ const unigatordb = {}
 
 unigatordb.events = () => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM unigator.Event`, (err, results) => {
+        db.query(`SELECT * FROM unigator.Event WHERE date >= ?`, [dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results)
+        })
+    });
+}
+
+unigatordb.pastEvents = () => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.Event WHERE date < ?`, [dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -30,17 +41,6 @@ unigatordb.events = () => {
 unigatordb.eventsByDate = (date) => {
     return new Promise((resolve, reject) => {
         db.query(`SELECT * FROM unigator.Event WHERE date = ?`, [date], (err, results) => {
-            if (err) {
-                return reject(err);
-            }
-            return resolve(results)
-        })
-    });
-}
-
-unigatordb.category = () => {
-    return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM unigator.Category`, (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -115,7 +115,8 @@ unigatordb.loginUser = (email, password) => {
             if (err || !passwordMatch) {
                 return reject({ error: "Invalid Email or password" });
             }
-            let token = jwt.sign({account_id: result[0].acc_id}, 'CookieSecretUserAuth', {expiresIn: 86400});
+            user = unigatordb.getUserInfo(result[0].acc_id)
+            let token = jwt.sign({user_id: user.user_id}, 'CookieSecretUserAuth', {expiresIn: 86400});
             return resolve({ 
                 message: "User login successfully",
                 newToken: token
@@ -255,4 +256,15 @@ module.exports = unigatordb;
 //     } catch(e) {
 //         // rollback
 //     }
+// }
+
+// unigatordb.category = () => {
+//     return new Promise((resolve, reject) => {
+//         db.query(`SELECT * FROM unigator.Category`, (err, results) => {
+//             if (err) {
+//                 return reject(err);
+//             }
+//             return resolve(results)
+//         })
+//     });
 // }
