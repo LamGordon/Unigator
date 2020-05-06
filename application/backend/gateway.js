@@ -18,6 +18,7 @@ app.use((req, res, next) => {
   if (req.cookies['Token']) {
     var decoded = jwt.verify(req.cookies['Token'], 'CookieSecretUserAuth');
     req.account_id = decoded.account_id;
+    console.log(decoded);
   } 
   next();
 })
@@ -120,21 +121,18 @@ app.get('/pointshop', async (req, res) => { //used to display point shop
   }
 });
 
-app.get('/pointshop/:item_id', async (req, res) => {  //used to buy items from pointshop
+app.post('/buyItem', async (req, res) => {  //used to buy items from pointshop
   try {
     let result;
-    req.account_id = 3;   //manual insertion of account_id for testing
-    let item_id = req.params.item_id;
-    console.log(item_id);
-    let item_cost = req.body.itemCost;
-    //let item_cost = 10;   //manual insertion of item cost for testing
-    if(req.account_id!=null) {
-      result = await unigatordb.pointShopBuyItem(req.account_id, item_id, item_cost);
-      console.log(result);
+    let user_id = req.user_id;
+    let item_id = req.body.item_id;
+    let item_cost = req.body.item_cost;
+    if(user_id!=null) {
+      result = await unigatordb.pointShopBuyItem(user_id, item_id, item_cost);
       res.json({message: result.message});
     }
-    if (req.account_id==null) {
-      throw "User is not logged in, cannot get purchased items.";
+    if (user_id==null) {
+      throw { error: "User is not logged in, cannot get purchased items."};
     }
   } catch (e) {
     console.log(e);
@@ -142,56 +140,21 @@ app.get('/pointshop/:item_id', async (req, res) => {  //used to buy items from p
   }
 });
 
-app.get('/mypointshopitems', async (req, res) => {    //used to display what user has purchased
+app.get('/purchaseditems', async (req, res) => {    //used to display what user has purchased
   try {
     let result;
-    req.account_id = 3;   //manual insertion of account_id for testing
-    console.log(req.account_id);
-    if(req.account_id!=null) {
-      result = await unigatordb.getAllPurchasedItems(req.account_id);
+    let user_id = req.user_id;
+    if(user_id!=null) {
+      result = await unigatordb.getAllPurchasedItems(user_id);
       res.json(result);
     }
-    if (req.account_id==null) {
-      throw "User is not logged in, cannot get purchased items.";
+    if (user_id==null) {
+      throw {error: "User is not logged in, cannot get purchased items."};
     }
   } catch (e) {
     console.log(e);
     res.sendStatus(400);
   }
 });
-
-app.get('/mypointshopitems/:item_id',async (req, res) => {  //used to toggle items from pointshop
-  try {
-    let result;
-    req.account_id = 3;   //manual insertion of account_id for testing
-    let item_id = req.params.item_id;
-    console.log(item_id);
-    //let enabled_status = req.body.enabled;
-    let enabled_status = 0;   //manual insertion of enabled status for testing
-    if(req.account_id!=null) {
-      result = await unigatordb.togglePointShopItem(req.account_id, item_id, enabled_status);
-      console.log(result);
-      res.json({message: result.message});
-    }
-    if (req.account_id==null) {
-      throw new Error("User is not logged in, cannot get enable or disable items.");
-    }
-  } catch (e) {
-    console.log(e);
-    res.sendStatus(400);
-  }
-});
-
-// //Just used to test getUserID
-// app.get('/userID', async (req, res) => {
-//   try {
-//     let result;
-//       result = await unigatordb.getUserId(2);
-//       res.json(result);
-//   } catch (e) {
-//     console.log(e);
-//     res.sendStatus(400);
-//   }
-// });
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
