@@ -111,6 +111,12 @@ class Events extends React.Component {
     })
   }
 
+  toggleTermsAndAgreementModal(){
+    this.setState({
+      termsAndAgreementIsOpen: ! this.state.termsAndAgreementIsOpen
+    })
+  }
+
   signupToLoginModal(){
     this.setState({
       signupIsOpen: ! this.state.signupIsOpen,
@@ -122,6 +128,12 @@ class Events extends React.Component {
     this.setState({
       loginIsOpen: ! this.state.loginIsOpen,
       signupIsOpen: ! this.state.signupIsOpen,
+    });
+  }
+
+  termsAndAgreementModal(){
+    this.setState({
+      termsAndAgreementIsOpen: ! this.state.termsAndAgreementIsOpen,
     });
   }
 
@@ -252,6 +264,9 @@ class Events extends React.Component {
           <Button style={{color: 'blue', background: 'none', border: 'none'}} onClick={this.signupToLoginModal.bind(this)}>
             I already have an account. Log in here.
           </Button>
+          <Button style={{color: 'red', background: 'none', border: 'none'}} onClick={this.termsAndAgreementModal.bind(this)}>
+            Terms and Agreement.
+          </Button>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary">Sign Up</Button>
@@ -261,45 +276,72 @@ class Events extends React.Component {
     )
   }
 
+  renderTermsAndAgreement = () => {
+    return(
+        <Modal show={this.state.termsAndAgreementIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+          <Modal.Header closeButton onClick={this.toggleTermsAndAgreementModal.bind(this)}>
+            <Modal.Title>Terms and Agreement</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <a>
+              Lorem ipsum dolor sit amet, mea movet euripidis et, mei et hinc apeirian splendide, latine veritus eu pro. At nec consequat definiebas, prima prompta saperet te per.
+              Facilis concludaturque te pri, omnium forensibus te pri. Duo prodesset efficiantur ei. Ut facer cetero has, mentitum conclusionemque vim no.
+              An est ceteros sapientem. Mea regione repudiare abhorreant cu, pro suas sale labore ex. Minim scripserit his at, usu te omnium assueverit.
+              No liber labores apeirian eum, nibh maiorum repudiare nec et, pro quot erroribus prodesset in. Cu altera diceret probatus nam, omnes vocibus vel ne.
+              Ei justo postea timeam pro, at nec tale prima tractatos. Nec magna prima laudem cu, et dolorum sententiae eloquentiam vim.
+              Ne est illum sonet ocurreret. Odio nisl sed cu, autem nostro sadipscing mea cu.
+              Per menandri abhorreant vituperatoribus cu. Ei iracundia mnesarchum efficiantur est, vix amet laboramus ut. Elit interesset no eum.
+              Mea homero voluptaria et, id has legere primis hendrerit. Natum summo torquatos ut vis. Option vidisse discere an vix, sit te saepe diceret vituperata.
+              Vix ne mucius omnium, dicta mundi antiopam vix ei, eu etiam homero qui. No nusquam euripidis vel, aliquip percipit forensibus per eu.
+              Usu denique principes an, enim nobis option qui eu. Saepe laudem sententiae usu no. Odio graecis honestatis duo ea, id detracto efficiendi his.
+            </a>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={this.toggleTermsAndAgreementModal.bind(this)}>Cancel</Button>
+          </Modal.Footer>
+        </Modal>
+    )
+  }
+
   renderCreateEvent = () => {
     return(
-      <Modal className="Create-Event" show={this.state.createEventIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
-        <Modal.Header closeButton onClick={this.toggleCreateEventModal.bind(this)}>
-          <Modal.Title>Create Event</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formBasicUsername">
-              <Form.Label>Event Name</Form.Label>
-              <Form.Control type="email" placeholder="Name of the event" />
-            </Form.Group>
-            <Form.Group controlId="formBasicUsername">
-              <Form.Label>Description</Form.Label>
-              <Form.Control type="username" placeholder="Enter description..." />
-            </Form.Group>
-            <Form.Group controlId="formBasicPassword">
-              <Form.Label>Location</Form.Label>
-              <Form.Control type="password" placeholder="Enter Location..." />
-            </Form.Group>
-            <Form.Group controlId="formBasicCheckbox">
-              <Form.Label>Admission</Form.Label>
-              <Form.Check type="checkbox" label="Free"/>
-              <Form.Check type="checkbox" label="Paid"/>
-              <Form.Control type="basic" placeholder="Enter Price..." />
-            </Form.Group>
-          </Form>
-          <div className="mb-3">
-            <Form.File id="formcheck-api-regular">
-              <Form.File.Label>Choose picture</Form.File.Label>
-              <Form.File.Input />
-            </Form.File>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary">Submit Event</Button>
-          <Button variant="secondary" onClick={this.toggleCreateEventModal.bind(this)}>Cancel</Button>
-        </Modal.Footer>
-      </Modal>
+        <Modal className="Create-Event" show={this.state.createEventIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+          <Modal.Header closeButton onClick={this.toggleCreateEventModal.bind(this)}>
+            <Modal.Title>Create Event</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Form.Group controlId="formBasicUsername">
+                <Form.Label>Event Name</Form.Label>
+                <Form.Control type="email" placeholder="Name of the event" />
+              </Form.Group>
+              <Form.Group controlId="formBasicUsername">
+                <Form.Label>Description</Form.Label>
+                <Form.Control type="username" placeholder="Enter description..." />
+              </Form.Group>
+              <Form.Group controlId="formBasicPassword">
+                <Form.Label>Location</Form.Label>
+                <Form.Control type="password" placeholder="Enter Location..." />
+              </Form.Group>
+              <Form.Group controlId="formBasicCheckbox">
+                <Form.Label>Admission</Form.Label>
+                <Form.Check type="checkbox" label="Free"/>
+                <Form.Check type="checkbox" label="Paid"/>
+                <Form.Control type="basic" placeholder="Enter Price..." />
+              </Form.Group>
+            </Form>
+            <div className="mb-3">
+              <Form.File id="formcheck-api-regular">
+                <Form.File.Label>Choose picture</Form.File.Label>
+                <Form.File.Input />
+              </Form.File>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="primary">Submit Event</Button>
+            <Button variant="secondary" onClick={this.toggleCreateEventModal.bind(this)}>Cancel</Button>
+          </Modal.Footer>
+        </Modal>
     )
   }
 
@@ -360,6 +402,7 @@ class Events extends React.Component {
         </Container>
     )
   }
+
 
   renderEvents = () => {
     const { events } = this.state;
@@ -452,6 +495,7 @@ class Events extends React.Component {
         {this.renderCreateEvent()}
         {this.renderCarousel()}
         {this.renderEvents()}
+        {this.renderTermsAndAgreement()}
       </Root>
     );
   }
