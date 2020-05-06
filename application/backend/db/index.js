@@ -115,8 +115,8 @@ unigatordb.loginUser = (email, password) => {
             if (err || !passwordMatch) {
                 return reject({ error: "Invalid Email or password" });
             }
-            user = unigatordb.getUserInfo(result[0].acc_id)
-            let token = jwt.sign({user_id: user.user_id}, 'CookieSecretUserAuth', {expiresIn: 86400});
+            user = await unigatordb.getUserInfo(result[0].acc_id)
+            let token = jwt.sign({user_id: user[0].user_id}, 'CookieSecretUserAuth', {expiresIn: 86400});
             return resolve({ 
                 message: "User login successfully",
                 newToken: token
@@ -160,7 +160,6 @@ unigatordb.getPointShop = () => {   //retrives all items purchasable in points s
 
 unigatordb.getAllPurchasedItems = (user_id) => { //retrives id of items purchased from the points shop by current user, also if enabled or not
     return new Promise(async (resolve, reject) => {
-        let user_id = user_id;
         db.query(`SELECT item_id, enabled FROM unigator.PurchasedItems P WHERE user_id = ?`, [user_id], (err, results) => {
             if (err) {
                 return reject(err);
