@@ -17,31 +17,41 @@ app.use(cors());
 app.use((req, res, next) => {
   if (req.cookies['Token']) {
     var decoded = jwt.verify(req.cookies['Token'], 'CookieSecretUserAuth');
-    req.account_id = decoded.account_id;
+    req.user_id = decoded.user_id;
   }
   next();
 })
-
-app.get('/', (req, res) => res.send('Hello World!'))
 
 app.post('/events', async (req, res) => {
   try {
     let result;
     date = req.body.date;
     let name = req.body.name;
+    let pastEvent = req.body.pastEvent;
 
-    if (date == null && name == null) {
-      result = await unigatordb.events();
-      res.json(result);
-    }
-    else if (date != null && name == null) {
-      result = await unigatordb.eventsByDate(date);
-      res.json(result);
-    }
-    else if (name != null) {
-      let results = await unigatordb.events();
-      let filtered = results.filter(result => result.name.toLowerCase().includes(name.toLowerCase()))
-      res.json(filtered);
+    if (pastEvent) {
+      result = await unigatordb.pastEvents();
+      if (name == null) {
+        res.json(result);
+      }
+      else {
+        let filtered = result.filter(item => item.name.toLowerCase().includes(name.toLowerCase()))
+        res.json(filtered);
+      }
+    } else {
+      if (date == null && name == null) {
+        result = await unigatordb.events();
+        res.json(result);
+      }
+      else if (date != null && name == null) {
+        result = await unigatordb.eventsByDate(date);
+        res.json(result);
+      }
+      if (name != null) {
+        let results = await unigatordb.events();
+        let filtered = results.filter(result => result.name.toLowerCase().includes(name.toLowerCase()))
+        res.json(filtered);
+      }
     }
   } catch (e) {
     console.log(e);
