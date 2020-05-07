@@ -22,10 +22,11 @@ import {
 import styled from "styled-components";
 import logoImage from '../../assets/unigatorLogo.png';
 import gatorImage from '../../assets/gatorImage.png';
+import Results from '../SearchResults/Results';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 //const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
-axios.defaults.baseURL = "http://54.193.95.217:3003";
+axios.defaults.baseURL = "http://13.52.231.107:3003/";
 
 const Forms = styled.form`
   display: flex;
@@ -205,6 +206,7 @@ class Events extends React.Component {
           console.log(err);
         });
     }
+    
   }
 
   onClickHandler = (category) => {
@@ -505,7 +507,12 @@ class Events extends React.Component {
               </Search>
               <Button className="submit-btn" variant="primary" type="submit" onClick={this.carouselHide.bind(this) }>
                 {/*containerHide too, not sure how to add both conClick events*/}
-                Submit
+                <Link to={{
+                  pathname: '/results',
+                  data: events
+                }}>
+                 Submit
+                </Link>>
               </Button>
               <Dropdown className="my-dropdown">
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -542,7 +549,7 @@ class Events extends React.Component {
         {this.renderCreateEvent()}
         {this.renderContainer()}
         {this.renderCarousel()}
-        {this.renderEvents()}
+        {/* {this.renderEvents()} */}
         {this.renderTermsAndAgreement()}
       </Root>
     );

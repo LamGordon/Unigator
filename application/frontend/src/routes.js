@@ -7,6 +7,7 @@ import Profile from "./pages/Profile/Profile";
 import EventDetail from "./pages/EventDetail/EventDetail";
 import Store from "./pages/Store/Store";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Results from './pages/SearchResults/Results';
 
 const Routes = (props) => {
   return (
@@ -40,6 +41,9 @@ const Routes = (props) => {
             </Route>
             <Route path="/store">
               <Store />
+            </Route>
+            <Route path="/results">
+              <Results />
             </Route>
           </Switch>
         </div>
