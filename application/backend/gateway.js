@@ -126,4 +126,51 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.get('/pointshop', async (req, res) => { //used to display point shop
+  try {
+    let result;
+      result = await unigatordb.getPointShop();
+      res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
+  }
+});
+
+app.post('/buyItem', async (req, res) => {  //used to buy items from pointshop
+  try {
+    let result;
+    let user_id = req.user_id;
+    let item_id = req.body.item_id;
+    let item_cost = req.body.item_cost;
+    if(user_id!=null) {
+      result = await unigatordb.pointShopBuyItem(user_id, item_id, item_cost);
+      res.json({message: result.message});
+    }
+    if (user_id==null) {
+      throw { error: "User is not logged in, cannot get purchased items."};
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
+app.get('/purchaseditems', async (req, res) => {    //used to display what user has purchased
+  try {
+    let result;
+    let user_id = req.user_id;
+    if(user_id!=null) {
+      result = await unigatordb.getAllPurchasedItems(user_id);
+      res.json(result);
+    }
+    if (user_id==null) {
+      throw {error: "User is not logged in, cannot get purchased items."};
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))

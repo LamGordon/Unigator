@@ -109,18 +109,100 @@ unigatordb.registerUser = (supervisor = 0, name, desc = "Empty", year, email, pa
 }
 
 unigatordb.loginUser = (email, password) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         db.query(`SELECT * FROM unigator.Account WHERE email = ?`, [email], async (err, result) => {
             let passwordMatch = await bcrypt.compare(password, result[0].password)
             if (err || !passwordMatch) {
                 return reject({ error: "Invalid Email or password" });
             }
-            user = unigatordb.getUserInfo(result[0].acc_id)
-            let token = jwt.sign({user_id: user.user_id}, 'CookieSecretUserAuth', {expiresIn: 86400});
+            user = await unigatordb.getUserInfo(result[0].acc_id)
+            let token = jwt.sign({user_id: user[0].user_id}, 'CookieSecretUserAuth', {expiresIn: 86400});
             return resolve({ 
                 message: "User login successfully",
                 newToken: token
             })
+        })
+    });
+}
+
+unigatordb.getUserInfo = (acc_id) => {
+    return new Promise(async (resolve, reject) => {
+        db.query(`SELECT * FROM unigator.User WHERE account_id = ?`, [acc_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+unigatordb.getUserInfoFromUserId = (user_id) => {
+    return new Promise( (resolve, reject) => {
+        db.query(`SELECT * FROM unigator.User WHERE user_id = ?`, [user_id], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+unigatordb.getPointShop = () => {   //retrives all items purchasable in points shop
+    return new Promise(async (resolve, reject) => {
+        db.query(`SELECT * FROM unigator.PointShop`, (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+unigatordb.getAllPurchasedItems = (user_id) => { //retrives id of items purchased from the points shop by current user, also if enabled or not
+    return new Promise(async (resolve, reject) => {
+        db.query(`SELECT item_id, enabled FROM unigator.PurchasedItems P WHERE user_id = ?`, [user_id], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+//no check if item is already purchased yet, either implement here or in frontend.
+unigatordb.pointShopBuyItem = (user_id, item_id, item_cost) => {          //used to buy an item from the points shop for current user
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (user_id==null) {
+                return reject({ error: "Please login if you wish to make a purchase." });
+            }
+            let current_user_info = await unigatordb.getUserInfoFromUserId(user_id);
+            let user_pointBalance = current_user_info[0].point_balance;
+            if (user_pointBalance < item_cost) {        //check if user has enough points to make purchase.
+                return reject({ error: "Insufficient amount of points."});
+            }  
+            else if (user_pointBalance >= item_cost) {
+                db.query(`INSERT IGNORE INTO unigator.PurchasedItems (user_id, item_id, enabled) VALUES(?,?,0)`, [user_id, item_id], async(err, results) => {
+                    if (err) {
+                        reject({ error: "System was unable to add this item to your account." });
+                    }
+                    await unigatordb.updatePointBalance(user_id, (-1*item_cost));
+                    return resolve({ message: "Purchase Sucessful: The item you selected has been added to your account" })
+                })
+            }
+        } catch (e) {
+            reject(e)
+        }
+    });
+}
+
+unigatordb.updatePointBalance = (user_id, update_value) => {    //updates point balance of user with update_value (pass user_id, not acc_id).
+    return new Promise((resolve, reject) => {
+        db.query(`UPDATE unigator.User U SET U.point_balance = (U.point_balance+?) WHERE U.user_id = ?`, [update_value, user_id], (err, results) => {
+            if (err) {
+                return reject({ error: "System was unable to update your points." });
+            }
+            return resolve({ message: "Points have been updated." })
         })
     });
 }
