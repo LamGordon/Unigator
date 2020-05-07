@@ -204,11 +204,11 @@ class Events extends React.Component {
           <Modal.Body>
             <Form>
               <Form.Group controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control type="email" placeholder="Enter SFSU Email" />
+                <Form.Label style={{fontWeight:'bold'}}>Email address</Form.Label>
+                <Form.Control type="email" placeholder="Enter San Francisco State University Email" />
               </Form.Group>
               <Form.Group controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
+                <Form.Label style={{fontWeight:'bold'}}>Password</Form.Label>
                 <Form.Control type="password" placeholder="Enter Password" />
               </Form.Group>
               <Form.Group controlId="formBasicCheckbox">
@@ -234,26 +234,34 @@ class Events extends React.Component {
           <Modal.Title>Sign Up</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <a>
-            Note: You must have an SFSU email to sign up for an account on this page.
-            If you do not have an SFSU email, please contact an administrator here:
+          <div style={{border: 'solid red'}}>
+          <a >
+            If you do not have a San Francisco State University email, please contact us here:
           </a>
           <Link to="/contact"> Contact Us</Link>
+          </div>
           <Form>
             <Form.Group controlId="formBasicEmail">
-              <Form.Label>SFSU Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter SFSU Email" />
+              <Form.Label style={{fontWeight:'bold'}}><br/>San Francisco State University Email</Form.Label>
+              <Form.Control type="email" placeholder="Enter San Francisco State University Email" />
             </Form.Group>
             <Form.Group controlId="formBasicUsername">
-              <Form.Label>Username</Form.Label>
+              <Form.Label style={{fontWeight:'bold'}}>Username</Form.Label>
               <Form.Control type="username" placeholder="Enter Username" />
             </Form.Group>
             <Form.Group controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
+              <Form.Label style={{fontWeight:'bold'}}>Password</Form.Label>
               <Form.Control type="password" placeholder="Enter Password" />
             </Form.Group>
+            <Form.Text className="text-muted">
+              Password must contain:
+              <li>8-20 Characters</li>
+              <li>Numbers (0-9)</li>
+              <li>Uppercase Letters</li>
+              <li>Lowercase Letters</li>
+            </Form.Text>
             <Form.Group controlId="formBasicPassword">
-              <Form.Label>Confirm Password</Form.Label>
+              <Form.Label style={{fontWeight:'bold'}}>Confirm Password</Form.Label>
               <Form.Control type="password" placeholder="Confirm Password" />
             </Form.Group>
           </Form>
@@ -590,7 +598,7 @@ class Events extends React.Component {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   <Dropdown.Item value='Categories' onClick={this.onClickHandler}>
-                    None
+                    All Categories
                   </Dropdown.Item>
                   <Dropdown.Item value='Technology' onClick={this.onClickHandler}>
                     Technology
