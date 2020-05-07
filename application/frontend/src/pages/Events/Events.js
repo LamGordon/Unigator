@@ -21,8 +21,7 @@ import styled from "styled-components";
 import logoImage from '../../assets/unigatorLogo.png';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
-//const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
-axios.defaults.baseURL = "http://54.193.95.217:3003";
+axios.defaults.baseURL = "http://13.52.231.107:3003";
 
 const Forms = styled.form`
   display: flex;
@@ -261,14 +260,14 @@ class Events extends React.Component {
           <Button style={{color: 'blue', background: 'none', border: 'none'}} onClick={this.signupToLoginModal.bind(this)}>
             I already have an account. Log in here.
           </Button>
-          <Row>
-            <Form.Group controlId="formBasicCheckbox">
-              <Form.Check type="checkbox" label="" />
-            </Form.Group>
-            <Button style={{color: 'red', background: 'none', border: 'none'}} onClick={this.termsAndAgreementModal.bind(this)}>
-              I agree with the terms & conditions.
-            </Button>
-          </Row>
+          <Form.Check type="checkbox" >
+            <Form.Check.Input isValid />
+            <Form.Check.Label>
+              {<Button style={{color: 'red', background: 'none', border: 'none'}} onClick={this.termsAndAgreementModal.bind(this)}>
+                I agree with the terms & conditions.
+              </Button>}
+            </Form.Check.Label>
+          </Form.Check>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary">Sign Up</Button>
@@ -421,7 +420,7 @@ class Events extends React.Component {
             </>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.toggleTermsAndAgreementModal.bind(this)}>Cancel</Button>
+            <Button variant="secondary" onClick={this.toggleTermsAndAgreementModal.bind(this)}>Close</Button>
           </Modal.Footer>
         </Modal>
     )
@@ -568,7 +567,7 @@ class Events extends React.Component {
     return (
       <Root>
         <Head>
-          <Link to="/home">
+          <Link to="/">
             <img className='logo' src={logoImage} onClick={this.carouselShow.bind(this)}></img>
           </Link>
           <div>
@@ -578,6 +577,7 @@ class Events extends React.Component {
                 <input
                   type="text"
                   name="searchEvent"
+                  placeholder="Search for Events"
                   onChange={this.handleInput}
                 />
               </Search>
