@@ -10,6 +10,8 @@ import {
   Modal,
   Form,
   Carousel,
+  Jumbotron,
+  Image,
 } from "react-bootstrap";
 import {
   BrowserRouter as Router,
@@ -19,6 +21,7 @@ import {
 } from "react-router-dom";
 import styled from "styled-components";
 import logoImage from '../../assets/unigatorLogo.png';
+import gatorImage from '../../assets/gatorImage.png';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 //const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
@@ -87,6 +90,7 @@ class Events extends React.Component {
       signupIsOpen: false,
       createEventIsOpen: false,
       carouselShow: true,
+      containerShow: true,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -154,6 +158,18 @@ class Events extends React.Component {
   carouselShow(){
     this.setState({
       carouselShow: true
+    })
+  }
+
+  containerHide(){
+    this.setState({
+      containerShow: false
+    })
+  }
+
+  containerShow(){
+    this.setState({
+      containerShow: true
     })
   }
 
@@ -422,7 +438,7 @@ class Events extends React.Component {
                       {item.location}
                     </Card.Subtitle>
                     <Card.Text>{item.desc}</Card.Text>
-										<Button variant="link">Share</Button>
+                    <Button variant="link">Share</Button>
                     <Link to="/eventdetail">
                     <Button variant="link">Learn More</Button>
                     </Link>
@@ -432,6 +448,36 @@ class Events extends React.Component {
             </Row>
           </Container>
         </RenderEvents>
+    )
+  }
+
+  renderContainer = () => {
+    const {containerShow} = this.state;
+    return (
+        <Container>
+          {containerShow
+              ?
+              <Row>
+                <Col>
+                  <Jumbotron style={{padding: 0}}>
+                    <Col className="text-white text-center"
+                         style={{backgroundImage: `url(https://mdbootstrap.com/img/Photos/Others/gradient1.jpg)`}}>
+                      <Col className="py-5">
+                        <h1 className="mx-5 mb-5 font-weight-bold">
+                          A Place to Unite San Fransisco State University Patrons!
+                        </h1>
+                        <Image src={gatorImage}thumbnail/>
+                        <h3 className="font-italic">
+                          Take part in our events focused platform to connect and socialize with your fellow Gators!
+                        </h3>
+                      </Col>
+                    </Col>
+                  </Jumbotron>
+                </Col>
+              </Row>
+              : null
+          }
+        </Container>
     )
   }
 
@@ -457,7 +503,8 @@ class Events extends React.Component {
                   onChange={this.handleInput}
                 />
               </Search>
-              <Button className="submit-btn" variant="primary" type="submit" onClick={this.carouselHide.bind(this)}>
+              <Button className="submit-btn" variant="primary" type="submit" onClick={this.carouselHide.bind(this) }>
+                {/*containerHide too, not sure how to add both conClick events*/}
                 Submit
               </Button>
               <Dropdown className="my-dropdown">
@@ -493,6 +540,7 @@ class Events extends React.Component {
         {this.renderLogin()}
         {this.renderSignUp()}
         {this.renderCreateEvent()}
+        {this.renderContainer()}
         {this.renderCarousel()}
         {this.renderEvents()}
         {this.renderTermsAndAgreement()}
