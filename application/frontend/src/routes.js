@@ -15,7 +15,7 @@ const Routes = (props) => {
           <nav>
             <ul className="navbar">
               <li>
-                <Link to="/home">Home</Link>
+                <Link to="/">Home</Link>
               </li>
               <li>
                 <Link to="/about">About</Link>
@@ -29,9 +29,6 @@ const Routes = (props) => {
             <Route path="/about">
               <About />
             </Route>
-            <Route path="/home">
-              <Events />
-            </Route>
             <Route path="/profile">
               <Profile />
             </Route>
@@ -40,6 +37,9 @@ const Routes = (props) => {
             </Route>
             <Route path="/store">
               <Store />
+            </Route>
+            <Route path="/">
+              <Events />
             </Route>
           </Switch>
         </div>
