@@ -17,6 +17,7 @@ class Profile extends Component {
     render() {
         return (
             <Container>
+                <h1 style={{textAlign: 'center'}}>My Profile</h1>
                 <Row>
                     <Col xs lg="5">
                         <Jumbotron>

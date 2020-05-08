@@ -218,8 +218,8 @@ class Routes extends React.Component {
                 <Form.Control type="email" placeholder="Enter San Francisco State University Email" />
               </Form.Group>
               <Form.Group controlId="formBasicUsername">
-                <Form.Label style={{fontWeight:'bold'}}>Username</Form.Label>
-                <Form.Control type="username" placeholder="Enter Username" />
+                <Form.Label style={{fontWeight:'bold'}}>Your Name</Form.Label>
+                <Form.Control type="username" placeholder="Enter Full Name" />
               </Form.Group>
               <Form.Group controlId="formBasicPassword">
                 <Form.Label style={{fontWeight:'bold'}}>Password</Form.Label>
