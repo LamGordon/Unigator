@@ -149,7 +149,7 @@ unigatordb.getUserInfoFromUserId = (user_id) => {
 
 unigatordb.getPointShop = () => {   //retrives all items purchasable in points shop
     return new Promise(async (resolve, reject) => {
-        db.query(`SELECT * FROM unigator.PointShop`, (err, results) => {
+        db.query(`SELECT * FROM unigator.PointShop ORDER BY type, cost;`, (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -160,7 +160,9 @@ unigatordb.getPointShop = () => {   //retrives all items purchasable in points s
 
 unigatordb.getAllPurchasedItems = (user_id) => { //retrives id of items purchased from the points shop by current user, also if enabled or not
     return new Promise(async (resolve, reject) => {
-        db.query(`SELECT item_id, enabled FROM unigator.PurchasedItems P WHERE user_id = ?`, [user_id], (err, results) => {
+        db.query(`SELECT PI.item_id, PI.enabled, PS.name, PS.value, PS.type 
+        FROM unigator.PurchasedItems PI, unigator.PointShop PS 
+        WHERE PI.item_id = PS.item_id and PI.user_id = ?`, [user_id], (err, results) => {
             if (err) {
                 return reject(err);
             }
@@ -206,6 +208,61 @@ unigatordb.updatePointBalance = (user_id, update_value) => {    //updates point 
         })
     });
 }
+
+unigatordb.enableItem = (user_id, item_id, enabled) => {    //enables a purchased point shop item for the user
+    return new Promise((resolve, reject) => {
+        if (enabled==0) {
+            db.query(`UPDATE unigator.PurchasedItems PI SET PI.enabled = 1 WHERE PI.item_id = ? AND PI.user_id = ?`, [item_id, user_id], (err, results) => {
+                if (err) {
+                    return reject({ error: "System was unable to enable this item." });
+                }
+                return resolve({ message: "Your item has been sucessfully enabled." })
+            })
+        } 
+        else if (enabled==1) {
+            return resolve({ message: "This item seems to already be enabled." })
+        }
+        else if (enabled==null) {
+            return reject({ error: "There seems to be an issue with this item, and could not be enabled." })
+        }
+    });
+}
+
+unigatordb.disableItem = (user_id, item_id, enabled) => {    //disables a purchased point shop item for the user
+    return new Promise((resolve, reject) => {
+        if (enabled==1) {
+            db.query(`UPDATE unigator.PurchasedItems PI SET PI.enabled = 0 WHERE PI.item_id = ? AND PI.user_id = ?`, [item_id, user_id], (err, results) => {
+                if (err) {
+                    return reject({ error: "System was unable to disable this item." });
+                }
+                return resolve({ message: "Your item has been sucessfully disabled." })
+            })
+        } 
+        else if (enabled==0) {
+            return resolve({ message: "This item seems to already be disabled." })
+        }
+        else if (enabled==null) {
+            return reject({ error: "There seems to be an issue with this item, and could not be disabled." })
+        }
+    });
+}
+
+unigatordb.disableItemByType = (user_id, type) => {    //disables all purchased point shop items of type type for the user
+    return new Promise((resolve, reject) => {
+        if (user_id!=1 && type!=null) {
+            db.query(`UPDATE unigator.PurchasedItems PI INNER JOIN unigator.PointShop PS On PI.item_id = PS.item_id SET PI.enabled = 0 WHERE PS.type = ? AND PI.user_id = ?`, [type, user_id], (err, results) => {
+                if (err) {
+                    return reject({ error: "System was unable to disable items of type: " + type });
+                }
+                return resolve({ message: "System sucessfully disabled all items of type: " + type })
+            })
+        } 
+        else {
+            return reject({ error: "The system had an issue disabling all items of type: " + type })
+        }
+    });
+}
+
 
 unigatordb.tempalte = () => {
     return new Promise((resolve, reject) => {
