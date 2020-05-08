@@ -11,43 +11,45 @@ import Results from './pages/SearchResults/Results';
 
 const Routes = (props) => {
   return (
-      <Router {...props}>
-        <div>
-          <nav>
-            <ul className="navbar">
-              <li>
-                <Link to="/home">Home</Link>
-              </li>
-              <li>
-                <Link to="/about">About</Link>
-              </li>
-            </ul>
-          </nav>
+    <Router {...props}>
+      <div>
+        <nav>
+          <ul className="navbar">
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/about">About</Link>
+            </li>
+          </ul>
+        </nav>
 
-          {/* A <Switch> looks through its children <Route>s and
+        {/* A <Switch> looks through its children <Route>s and
              renders the first one that matches the current URL. */}
-          <Switch>
-            <Route path="/about">
-              <About />
-            </Route>
-            <Route path="/home">
-              <Events />
-            </Route>
-            <Route path="/profile">
-              <Profile />
-            </Route>
-            <Route path="/eventdetail">
-              <EventDetail />
-            </Route>
-            <Route path="/store">
-              <Store />
-            </Route>
-            <Route path="/results">
+        <Switch>
+          <Route path="/about">
+            <About />
+          </Route>
+          <Route path="/" component={Events} exact />
+          {/* <Route path="/home">
+            <Events />
+          </Route> */}
+          <Route path="/profile">
+            <Profile />
+          </Route>
+          <Route path="/eventdetail">
+            <EventDetail />
+          </Route>
+          <Route path="/store">
+            <Store />
+          </Route>
+          <Route path="/results" component={Results} />
+          {/* <Route path="/results">
               <Results />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
+            </Route> */}
+        </Switch>
+      </div>
+    </Router>
   );
 };
 

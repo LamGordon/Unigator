@@ -23,8 +23,9 @@ class Results extends React.Component {
         };
     }
     componentDidMount() {
-        const { events } = this.props.data;
-        this.setState({events: events});
+        const { events } = this.props.location.state;
+        this.setState({events});
+        console.log(events)
     }
     render() {
         const { events } = this.state;

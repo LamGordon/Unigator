@@ -98,47 +98,47 @@ class Events extends React.Component {
     this.handleInput = this.handleInput.bind(this);
   }
 
-  toggleLoginModal(){
+  toggleLoginModal() {
     this.setState({
-      loginIsOpen: ! this.state.loginIsOpen
+      loginIsOpen: !this.state.loginIsOpen
     })
   }
 
-  toggleSignupModal(){
+  toggleSignupModal() {
     this.setState({
-      signupIsOpen: ! this.state.signupIsOpen
-    })
-  }
-  
-  toggleCreateEventModal(){
-    this.setState({
-      createEventIsOpen: ! this.state.createEventIsOpen
+      signupIsOpen: !this.state.signupIsOpen
     })
   }
 
-  toggleTermsAndAgreementModal(){
+  toggleCreateEventModal() {
     this.setState({
-      termsAndAgreementIsOpen: ! this.state.termsAndAgreementIsOpen
+      createEventIsOpen: !this.state.createEventIsOpen
     })
   }
 
-  signupToLoginModal(){
+  toggleTermsAndAgreementModal() {
     this.setState({
-      signupIsOpen: ! this.state.signupIsOpen,
-      loginIsOpen: ! this.state.loginIsOpen,
+      termsAndAgreementIsOpen: !this.state.termsAndAgreementIsOpen
+    })
+  }
+
+  signupToLoginModal() {
+    this.setState({
+      signupIsOpen: !this.state.signupIsOpen,
+      loginIsOpen: !this.state.loginIsOpen,
     });
   }
 
-  loginToSignupModal(){
+  loginToSignupModal() {
     this.setState({
-      loginIsOpen: ! this.state.loginIsOpen,
-      signupIsOpen: ! this.state.signupIsOpen,
+      loginIsOpen: !this.state.loginIsOpen,
+      signupIsOpen: !this.state.signupIsOpen,
     });
   }
 
-  termsAndAgreementModal(){
+  termsAndAgreementModal() {
     this.setState({
-      termsAndAgreementIsOpen: ! this.state.termsAndAgreementIsOpen,
+      termsAndAgreementIsOpen: !this.state.termsAndAgreementIsOpen,
     });
   }
 
@@ -150,25 +150,25 @@ class Events extends React.Component {
   //   });
   // }
 
-  carouselHide(){
+  carouselHide() {
     this.setState({
       carouselShow: false
     })
   }
 
-  carouselShow(){
+  carouselShow() {
     this.setState({
       carouselShow: true
     })
   }
 
-  containerHide(){
+  containerHide() {
     this.setState({
       containerShow: false
     })
   }
 
-  containerShow(){
+  containerShow() {
     this.setState({
       containerShow: true
     })
@@ -187,6 +187,7 @@ class Events extends React.Component {
         .post(`/events`, { name: searchEvent })
         .then((res) => {
           this.setState({ events: res.data });
+          this.props.history.push("/results", { events: res.data })
         })
         .catch((err) => {
           console.log(err);
@@ -201,12 +202,13 @@ class Events extends React.Component {
         })
         .then((res) => {
           this.setState({ events: res.data });
+          this.props.history.push("/results", { events: res.data })
         })
         .catch((err) => {
           console.log(err);
         });
     }
-    
+
   }
 
   onClickHandler = (category) => {
@@ -217,37 +219,37 @@ class Events extends React.Component {
   renderLogin = () => {
     return (
       <Modal className="Log-in" show={this.state.loginIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
-          <Modal.Header closeButton onClick={this.toggleLoginModal.bind(this)}>
-            <Modal.Title>Log In</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group controlId="formBasicEmail">
-                <Form.Label>Email address</Form.Label>
-                <Form.Control type="email" placeholder="Enter SFSU Email" />
-              </Form.Group>
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Enter Password" />
-              </Form.Group>
-              <Form.Group controlId="formBasicCheckbox">
-                <Form.Check type="checkbox" label="Remember me" />
-              </Form.Group>
-            </Form>
-            <Button style={{color: 'blue', background: 'none', border: 'none'}} onClick={this.loginToSignupModal.bind(this)}>
-              I want to create an account. Sign up here.
+        <Modal.Header closeButton onClick={this.toggleLoginModal.bind(this)}>
+          <Modal.Title>Log In</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Label>Email address</Form.Label>
+              <Form.Control type="email" placeholder="Enter SFSU Email" />
+            </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" placeholder="Enter Password" />
+            </Form.Group>
+            <Form.Group controlId="formBasicCheckbox">
+              <Form.Check type="checkbox" label="Remember me" />
+            </Form.Group>
+          </Form>
+          <Button style={{ color: 'blue', background: 'none', border: 'none' }} onClick={this.loginToSignupModal.bind(this)}>
+            I want to create an account. Sign up here.
             </Button>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary">Log In</Button>
-            <Button variant="secondary" onClick={this.toggleLoginModal.bind(this)}>Cancel</Button>
-          </Modal.Footer>
-        </Modal>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary">Log In</Button>
+          <Button variant="secondary" onClick={this.toggleLoginModal.bind(this)}>Cancel</Button>
+        </Modal.Footer>
+      </Modal>
     )
   }
 
   renderSignUp = () => {
-    return(
+    return (
       <Modal className="Sign-Up" show={this.state.signupIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
         <Modal.Header closeButton onClick={this.toggleSignupModal.bind(this)}>
           <Modal.Title>Sign Up</Modal.Title>
@@ -279,10 +281,10 @@ class Events extends React.Component {
               <Form.Control type="password" placeholder="Confirm Password" />
             </Form.Group>
           </Form>
-          <Button style={{color: 'blue', background: 'none', border: 'none'}} onClick={this.signupToLoginModal.bind(this)}>
+          <Button style={{ color: 'blue', background: 'none', border: 'none' }} onClick={this.signupToLoginModal.bind(this)}>
             I already have an account. Log in here.
           </Button>
-          <Button style={{color: 'red', background: 'none', border: 'none'}} onClick={this.termsAndAgreementModal.bind(this)}>
+          <Button style={{ color: 'red', background: 'none', border: 'none' }} onClick={this.termsAndAgreementModal.bind(this)}>
             Terms and Agreement.
           </Button>
         </Modal.Body>
@@ -295,129 +297,129 @@ class Events extends React.Component {
   }
 
   renderTermsAndAgreement = () => {
-    return(
-        <Modal show={this.state.termsAndAgreementIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
-          <Modal.Header closeButton onClick={this.toggleTermsAndAgreementModal.bind(this)}>
-            <Modal.Title>Terms and Agreement</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <a>
-              Lorem ipsum dolor sit amet, mea movet euripidis et, mei et hinc apeirian splendide, latine veritus eu pro. At nec consequat definiebas, prima prompta saperet te per.
-              Facilis concludaturque te pri, omnium forensibus te pri. Duo prodesset efficiantur ei. Ut facer cetero has, mentitum conclusionemque vim no.
-              An est ceteros sapientem. Mea regione repudiare abhorreant cu, pro suas sale labore ex. Minim scripserit his at, usu te omnium assueverit.
-              No liber labores apeirian eum, nibh maiorum repudiare nec et, pro quot erroribus prodesset in. Cu altera diceret probatus nam, omnes vocibus vel ne.
-              Ei justo postea timeam pro, at nec tale prima tractatos. Nec magna prima laudem cu, et dolorum sententiae eloquentiam vim.
-              Ne est illum sonet ocurreret. Odio nisl sed cu, autem nostro sadipscing mea cu.
-              Per menandri abhorreant vituperatoribus cu. Ei iracundia mnesarchum efficiantur est, vix amet laboramus ut. Elit interesset no eum.
-              Mea homero voluptaria et, id has legere primis hendrerit. Natum summo torquatos ut vis. Option vidisse discere an vix, sit te saepe diceret vituperata.
-              Vix ne mucius omnium, dicta mundi antiopam vix ei, eu etiam homero qui. No nusquam euripidis vel, aliquip percipit forensibus per eu.
-              Usu denique principes an, enim nobis option qui eu. Saepe laudem sententiae usu no. Odio graecis honestatis duo ea, id detracto efficiendi his.
+    return (
+      <Modal show={this.state.termsAndAgreementIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal.Header closeButton onClick={this.toggleTermsAndAgreementModal.bind(this)}>
+          <Modal.Title>Terms and Agreement</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <a>
+            Lorem ipsum dolor sit amet, mea movet euripidis et, mei et hinc apeirian splendide, latine veritus eu pro. At nec consequat definiebas, prima prompta saperet te per.
+            Facilis concludaturque te pri, omnium forensibus te pri. Duo prodesset efficiantur ei. Ut facer cetero has, mentitum conclusionemque vim no.
+            An est ceteros sapientem. Mea regione repudiare abhorreant cu, pro suas sale labore ex. Minim scripserit his at, usu te omnium assueverit.
+            No liber labores apeirian eum, nibh maiorum repudiare nec et, pro quot erroribus prodesset in. Cu altera diceret probatus nam, omnes vocibus vel ne.
+            Ei justo postea timeam pro, at nec tale prima tractatos. Nec magna prima laudem cu, et dolorum sententiae eloquentiam vim.
+            Ne est illum sonet ocurreret. Odio nisl sed cu, autem nostro sadipscing mea cu.
+            Per menandri abhorreant vituperatoribus cu. Ei iracundia mnesarchum efficiantur est, vix amet laboramus ut. Elit interesset no eum.
+            Mea homero voluptaria et, id has legere primis hendrerit. Natum summo torquatos ut vis. Option vidisse discere an vix, sit te saepe diceret vituperata.
+            Vix ne mucius omnium, dicta mundi antiopam vix ei, eu etiam homero qui. No nusquam euripidis vel, aliquip percipit forensibus per eu.
+            Usu denique principes an, enim nobis option qui eu. Saepe laudem sententiae usu no. Odio graecis honestatis duo ea, id detracto efficiendi his.
             </a>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.toggleTermsAndAgreementModal.bind(this)}>Cancel</Button>
-          </Modal.Footer>
-        </Modal>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={this.toggleTermsAndAgreementModal.bind(this)}>Cancel</Button>
+        </Modal.Footer>
+      </Modal>
     )
   }
 
   renderCreateEvent = () => {
-    return(
-        <Modal className="Create-Event" show={this.state.createEventIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
-          <Modal.Header closeButton onClick={this.toggleCreateEventModal.bind(this)}>
-            <Modal.Title>Create Event</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Form.Group controlId="formBasicUsername">
-                <Form.Label>Event Name</Form.Label>
-                <Form.Control type="email" placeholder="Name of the event" />
-              </Form.Group>
-              <Form.Group controlId="formBasicUsername">
-                <Form.Label>Description</Form.Label>
-                <Form.Control type="username" placeholder="Enter description..." />
-              </Form.Group>
-              <Form.Group controlId="formBasicPassword">
-                <Form.Label>Location</Form.Label>
-                <Form.Control type="password" placeholder="Enter Location..." />
-              </Form.Group>
-              <Form.Group controlId="formBasicCheckbox">
-                <Form.Label>Admission</Form.Label>
-                <Form.Check type="checkbox" label="Free"/>
-                <Form.Check type="checkbox" label="Paid"/>
-                <Form.Control type="basic" placeholder="Enter Price..." />
-              </Form.Group>
-            </Form>
-            <div className="mb-3">
-              <Form.File id="formcheck-api-regular">
-                <Form.File.Label>Choose picture</Form.File.Label>
-                <Form.File.Input />
-              </Form.File>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary">Submit Event</Button>
-            <Button variant="secondary" onClick={this.toggleCreateEventModal.bind(this)}>Cancel</Button>
-          </Modal.Footer>
-        </Modal>
+    return (
+      <Modal className="Create-Event" show={this.state.createEventIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+        <Modal.Header closeButton onClick={this.toggleCreateEventModal.bind(this)}>
+          <Modal.Title>Create Event</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formBasicUsername">
+              <Form.Label>Event Name</Form.Label>
+              <Form.Control type="email" placeholder="Name of the event" />
+            </Form.Group>
+            <Form.Group controlId="formBasicUsername">
+              <Form.Label>Description</Form.Label>
+              <Form.Control type="username" placeholder="Enter description..." />
+            </Form.Group>
+            <Form.Group controlId="formBasicPassword">
+              <Form.Label>Location</Form.Label>
+              <Form.Control type="password" placeholder="Enter Location..." />
+            </Form.Group>
+            <Form.Group controlId="formBasicCheckbox">
+              <Form.Label>Admission</Form.Label>
+              <Form.Check type="checkbox" label="Free" />
+              <Form.Check type="checkbox" label="Paid" />
+              <Form.Control type="basic" placeholder="Enter Price..." />
+            </Form.Group>
+          </Form>
+          <div className="mb-3">
+            <Form.File id="formcheck-api-regular">
+              <Form.File.Label>Choose picture</Form.File.Label>
+              <Form.File.Input />
+            </Form.File>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary">Submit Event</Button>
+          <Button variant="secondary" onClick={this.toggleCreateEventModal.bind(this)}>Cancel</Button>
+        </Modal.Footer>
+      </Modal>
     )
   }
 
   renderCarousel = () => {
     const { carouselShow } = this.state;
     return (
-        <Container>
-          {carouselShow
-            ?<div>
-              <h1 style={{textAlign: 'center'}}>Featured Events</h1>
-              <Carousel>
-                <Carousel.Item>
-                  <Link to="/eventdetail">
-                    <img
-                        className="d-block w-100"
-                        src="https://qph.fs.quoracdn.net/main-qimg-9576272f4a2fe3344b1a774db1d7650b-c"
-                        alt="First slide"
-                    />
-                  </Link>
-                  <Carousel.Caption>
-                    <h3 style={{textShadow: '2px 2px #000000'}}>Mobile dev 101</h3>
-                    <p style={{textShadow: '2px 2px #000000'}}>Thornton Hall</p>
-                    <p style={{textShadow: '2px 2px #000000'}}>Lets learn how to create a mobile app</p>
-                  </Carousel.Caption>
-                </Carousel.Item>
-                <Carousel.Item>
-                  <Link to="/eventdetail">
-                    <img
-                        className="d-block w-100"
-                        src="https://www.nextavenue.org/wp-content/uploads/2017/05/My-Foray-Into-Watercolors_64633113.jpg"
-                        alt="Third slide"
-                    />
-                  </Link>
-                  <Carousel.Caption>
-                    <h3 style={{textShadow: '2px 2px #000000'}}>Art 101</h3>
-                    <p style={{textShadow: '2px 2px #000000'}}>Cesar Chavez Building</p>
-                    <p style={{textShadow: '2px 2px #000000'}}>Let learn how to use water color</p>
-                  </Carousel.Caption>
-                </Carousel.Item>
-                <Carousel.Item>
-                  <Link to="/eventdetail">
-                    <img
-                        className="d-block w-100"
-                        src="https://www.ed2go.com/binaries/content/gallery/ed2go/products/17428.jpg"
-                        alt="Third slide"
-                    />
-                  </Link>
-                  <Carousel.Caption>
-                    <h3 style={{textShadow: '2px 2px #000000'}}>Resume 101</h3>
-                    <p style={{textShadow: '2px 2px #000000'}}>J. Paul Leonard Library</p>
-                    <p style={{textShadow: '2px 2px #000000'}}>Resume 101</p>
-                  </Carousel.Caption>
-                </Carousel.Item>
-              </Carousel>
-            </div>
-              : null
-            }
-        </Container>
+      <Container>
+        {carouselShow
+          ? <div>
+            <h1 style={{ textAlign: 'center' }}>Featured Events</h1>
+            <Carousel>
+              <Carousel.Item>
+                <Link to="/eventdetail">
+                  <img
+                    className="d-block w-100"
+                    src="https://qph.fs.quoracdn.net/main-qimg-9576272f4a2fe3344b1a774db1d7650b-c"
+                    alt="First slide"
+                  />
+                </Link>
+                <Carousel.Caption>
+                  <h3 style={{ textShadow: '2px 2px #000000' }}>Mobile dev 101</h3>
+                  <p style={{ textShadow: '2px 2px #000000' }}>Thornton Hall</p>
+                  <p style={{ textShadow: '2px 2px #000000' }}>Lets learn how to create a mobile app</p>
+                </Carousel.Caption>
+              </Carousel.Item>
+              <Carousel.Item>
+                <Link to="/eventdetail">
+                  <img
+                    className="d-block w-100"
+                    src="https://www.nextavenue.org/wp-content/uploads/2017/05/My-Foray-Into-Watercolors_64633113.jpg"
+                    alt="Third slide"
+                  />
+                </Link>
+                <Carousel.Caption>
+                  <h3 style={{ textShadow: '2px 2px #000000' }}>Art 101</h3>
+                  <p style={{ textShadow: '2px 2px #000000' }}>Cesar Chavez Building</p>
+                  <p style={{ textShadow: '2px 2px #000000' }}>Let learn how to use water color</p>
+                </Carousel.Caption>
+              </Carousel.Item>
+              <Carousel.Item>
+                <Link to="/eventdetail">
+                  <img
+                    className="d-block w-100"
+                    src="https://www.ed2go.com/binaries/content/gallery/ed2go/products/17428.jpg"
+                    alt="Third slide"
+                  />
+                </Link>
+                <Carousel.Caption>
+                  <h3 style={{ textShadow: '2px 2px #000000' }}>Resume 101</h3>
+                  <p style={{ textShadow: '2px 2px #000000' }}>J. Paul Leonard Library</p>
+                  <p style={{ textShadow: '2px 2px #000000' }}>Resume 101</p>
+                </Carousel.Caption>
+              </Carousel.Item>
+            </Carousel>
+          </div>
+          : null
+        }
+      </Container>
     )
   }
 
@@ -426,60 +428,60 @@ class Events extends React.Component {
     const { events } = this.state;
     return (
       <RenderEvents>
-          <Container>
-            <Row className="justify-content-md-center">
-              {events.map((item) => (
-                <Card style={{ width: "18rem" }}>
-                  <Card.Img
-                    variant="top"
-                    src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
-                  />
-                  <Card.Body>
-                    <Card.Title>{item.name}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                      {item.location}
-                    </Card.Subtitle>
-                    <Card.Text>{item.desc}</Card.Text>
-                    <Button variant="link">Share</Button>
-                    <Link to="/eventdetail">
+        <Container>
+          <Row className="justify-content-md-center">
+            {events.map((item) => (
+              <Card style={{ width: "18rem" }}>
+                <Card.Img
+                  variant="top"
+                  src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
+                />
+                <Card.Body>
+                  <Card.Title>{item.name}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    {item.location}
+                  </Card.Subtitle>
+                  <Card.Text>{item.desc}</Card.Text>
+                  <Button variant="link">Share</Button>
+                  <Link to="/eventdetail">
                     <Button variant="link">Learn More</Button>
-                    </Link>
-                  </Card.Body>
-                </Card>
-              ))}
-            </Row>
-          </Container>
-        </RenderEvents>
+                  </Link>
+                </Card.Body>
+              </Card>
+            ))}
+          </Row>
+        </Container>
+      </RenderEvents>
     )
   }
 
   renderContainer = () => {
-    const {containerShow} = this.state;
+    const { containerShow } = this.state;
     return (
-        <Container>
-          {containerShow
-              ?
-              <Row>
-                <Col>
-                  <Jumbotron style={{padding: 0}}>
-                    <Col className="text-white text-center"
-                         style={{backgroundImage: `url(https://mdbootstrap.com/img/Photos/Others/gradient1.jpg)`}}>
-                      <Col className="py-5">
-                        <h1 className="mx-5 mb-5 font-weight-bold">
-                          A Place to Unite San Fransisco State University Patrons!
+      <Container>
+        {containerShow
+          ?
+          <Row>
+            <Col>
+              <Jumbotron style={{ padding: 0 }}>
+                <Col className="text-white text-center"
+                  style={{ backgroundImage: `url(https://mdbootstrap.com/img/Photos/Others/gradient1.jpg)` }}>
+                  <Col className="py-5">
+                    <h1 className="mx-5 mb-5 font-weight-bold">
+                      A Place to Unite San Fransisco State University Patrons!
                         </h1>
-                        <Image src={gatorImage}thumbnail/>
-                        <h3 className="font-italic">
-                          Take part in our events focused platform to connect and socialize with your fellow Gators!
+                    <Image src={gatorImage} thumbnail />
+                    <h3 className="font-italic">
+                      Take part in our events focused platform to connect and socialize with your fellow Gators!
                         </h3>
-                      </Col>
-                    </Col>
-                  </Jumbotron>
+                  </Col>
                 </Col>
-              </Row>
-              : null
-          }
-        </Container>
+              </Jumbotron>
+            </Col>
+          </Row>
+          : null
+        }
+      </Container>
     )
   }
 
@@ -492,7 +494,7 @@ class Events extends React.Component {
     return (
       <Root>
         <Head>
-          <Link to="/home">
+          <Link to="/">
             <img className='logo' src={logoImage} onClick={this.carouselShow.bind(this)}></img>
           </Link>
           <div>
@@ -505,14 +507,13 @@ class Events extends React.Component {
                   onChange={this.handleInput}
                 />
               </Search>
-              <Button className="submit-btn" variant="primary" type="submit" onClick={this.carouselHide.bind(this) }>
-                {/*containerHide too, not sure how to add both conClick events*/}
-                <Link to={{
-                  pathname: '/results',
-                  data: events
-                }}>
-                 Submit
-                </Link>>
+              <Button
+                className="submit-btn"
+                variant="primary"
+                type="submit"
+                onClick={this.carouselHide.bind(this)}
+              >
+                Submit
               </Button>
               <Dropdown className="my-dropdown">
                 <Dropdown.Toggle variant="success" id="dropdown-basic">
