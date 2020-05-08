@@ -568,67 +568,63 @@ class Events extends React.Component {
   }
 
   render() {
-    console.log("------------------------------------");
-    console.log("State: ", this.state);
-    console.log("------------------------------------");
-    const { category, events } = this.state;
+    // console.log("------------------------------------");
+    // console.log("State: ", this.state);
+    // console.log("------------------------------------");
+    // const { category, events } = this.state;
 
     return (
       <Root>
-        <Head>
-          <Link to="/">
-            <img className='logo' src={logoImage} onClick={this.carouselShow.bind(this)}></img>
-          </Link>
-          <div>
-            <Forms onSubmit={this.handleSubmit}>
-              <Search>
-                Search:
-                <input
-                  type="text"
-                  name="searchEvent"
-                  placeholder="Search for Events"
-                  onChange={this.handleInput}
-                />
-              </Search>
-              <Button className="submit-btn" variant="primary" type="submit" onClick={this.carouselHide.bind(this)}>
-                Submit
-              </Button>
-              <Dropdown className="my-dropdown">
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                  {category}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item value='Categories' onClick={this.onClickHandler}>
-                    All Categories
-                  </Dropdown.Item>
-                  <Dropdown.Item value='Technology' onClick={this.onClickHandler}>
-                    Technology
-                  </Dropdown.Item>
-                  <Dropdown.Item value='Education' onClick={this.onClickHandler}>
-                    Education
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            </Forms>
-          </div>
-          <div className="fancy-btn">
-            <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>
-            <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
-            <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
-            <Link to="/profile">
-              <Button variant="outline-primary">My profile</Button>
-            </Link>
-            <Link to="/store">
-              <Button variant="outline-primary">Store</Button>
-            </Link>
-          </div>
-        </Head>
-        {this.renderLogin()}
-        {this.renderSignUp()}
-        {this.renderCreateEvent()}
+        {/*<Head>*/}
+        {/*  <Link to="/">*/}
+        {/*    <img className='logo' src={logoImage} onClick={this.carouselShow.bind(this)}></img>*/}
+        {/*  </Link>*/}
+        {/*  <div>*/}
+        {/*    <Forms onSubmit={this.handleSubmit}>*/}
+        {/*      <Search>*/}
+        {/*        Search:*/}
+        {/*        <input*/}
+        {/*          type="text"*/}
+        {/*          name="searchEvent"*/}
+        {/*          placeholder="Search for Events"*/}
+        {/*          onChange={this.handleInput}*/}
+        {/*        />*/}
+        {/*      </Search>*/}
+        {/*      <Button className="submit-btn" variant="primary" type="submit" onClick={this.carouselHide.bind(this)}>*/}
+        {/*        Submit*/}
+        {/*      </Button>*/}
+        {/*      <Dropdown className="my-dropdown">*/}
+        {/*        <Dropdown.Toggle variant="success" id="dropdown-basic">*/}
+        {/*          {category}*/}
+        {/*        </Dropdown.Toggle>*/}
+        {/*        <Dropdown.Menu>*/}
+        {/*          <Dropdown.Item value='Categories' onClick={this.onClickHandler}>*/}
+        {/*            All Categories*/}
+        {/*          </Dropdown.Item>*/}
+        {/*          <Dropdown.Item value='Technology' onClick={this.onClickHandler}>*/}
+        {/*            Technology*/}
+        {/*          </Dropdown.Item>*/}
+        {/*          <Dropdown.Item value='Education' onClick={this.onClickHandler}>*/}
+        {/*            Education*/}
+        {/*          </Dropdown.Item>*/}
+        {/*        </Dropdown.Menu>*/}
+        {/*      </Dropdown>*/}
+        {/*    </Forms>*/}
+        {/*  </div>*/}
+        {/*  <div className="fancy-btn">*/}
+        {/*    <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>*/}
+        {/*    <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>*/}
+        {/*    <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>*/}
+        {/*    <Button href='/profile' variant="outline-primary">My profile</Button>*/}
+        {/*    <Button href='/store' variant="outline-primary">Store</Button>*/}
+        {/*  </div>*/}
+        {/*</Head>*/}
+        {/*{this.renderLogin()}*/}
+        {/*{this.renderSignUp()}*/}
+        {/*{this.renderCreateEvent()}*/}
         {this.renderCarousel()}
-        {this.renderEvents()}
-        {this.renderTermsAndAgreement()}
+        {/*{this.renderEvents()}*/}
+        {/*{this.renderTermsAndAgreement()}*/}
       </Root>
     );
   }
