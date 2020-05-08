@@ -79,6 +79,23 @@ app.get('/events/:category', async (req, res) => {
   }
 })
 
+app.post('/rsvp', async (req, res) => {
+  try {
+    let result;
+    let event_id = req.body.event_id;
+    let user_id = req.user_id;
+
+    if (user_id == null) {
+      throw {error: "You are not legged in, can't RSVP to event"}
+    }
+    result = await unigatordb.rsvpUser(user_id, event_id);
+    res.json({ message: "User logout successful" });
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
 app.post('/login', async (req, res) => {
   try {
     let result;

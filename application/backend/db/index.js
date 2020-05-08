@@ -76,6 +76,18 @@ unigatordb.eventsByCategory = (category) => {
     });
 }
 
+unigatordb.rsvpUser = (user_id, event_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.RSVPList WHERE event_id=? AND user_id=?`, [event_id,user_id], (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            console.log(result)
+            return resolve(results)
+        })
+    });
+}
+
 unigatordb.createAccount = async (email, password) => {
     return new Promise(async (resolve, reject) => {
         password = await bcrypt.hash(password, saltRounds);
