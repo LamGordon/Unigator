@@ -31,9 +31,6 @@ const Routes = (props) => {
             <About />
           </Route>
           <Route path="/" component={Events} exact />
-          {/* <Route path="/home">
-            <Events />
-          </Route> */}
           <Route path="/profile">
             <Profile />
           </Route>
@@ -44,9 +41,6 @@ const Routes = (props) => {
             <Store />
           </Route>
           <Route path="/results" component={Results} />
-          {/* <Route path="/results">
-              <Results />
-            </Route> */}
         </Switch>
       </div>
     </Router>
