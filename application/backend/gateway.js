@@ -88,8 +88,8 @@ app.post('/rsvp', async (req, res) => {
     if (user_id == null) {
       throw {error: "You are not legged in, can't RSVP to event"}
     }
-    result = await unigatordb.rsvpUser(user_id, event_id);
-    res.json({ message: "User logout successful" });
+    result = await unigatordb.rsvpUser(parseInt(user_id, 10), event_id);
+    res.json(result);
   } catch (e) {
     console.log(e);
     res.status(403).send(e);
@@ -131,10 +131,9 @@ app.post('/register', async (req, res) => {
     let password = req.body.password;
     let desc = req.body.description;
     let year = req.body.year;
-    let supervisor = req.body.supervisor;
 
     if (name != null && email != null && password != null && year != null) {
-      result = await unigatordb.registerUser(supervisor, name, desc, year, email, password)
+      result = await unigatordb.registerUser(name, desc, year, email, password)
       res.json(result);
     }
   } catch (e) {
