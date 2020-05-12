@@ -76,6 +76,17 @@ unigatordb.eventsByCategory = (category) => {
     });
 }
 
+unigatordb.rsvpList = (event_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.RSVPList WHERE event_id=?`, [event_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results)
+        })
+    });
+}
+
 unigatordb.rsvpUser = (user_id, event_id) => {
     let response;
     return new Promise((resolve, reject) => {
@@ -85,14 +96,11 @@ unigatordb.rsvpUser = (user_id, event_id) => {
             }
             try {
                 if (result.length == 0) {
-                    console.log("inside not in rsvp list check")
                     response = await unigatordb.addUserToRsvpList(event_id, user_id)
                 } else {
-                    console.log("inside already in rsvp list check")
                     response = await unigatordb.removeUserFromRsvpList(event_id, user_id)
                 }
             } catch {
-                console.log("inside catch for rsvpUser")
                 return reject(response)
             }
             return resolve(response)
@@ -100,13 +108,10 @@ unigatordb.rsvpUser = (user_id, event_id) => {
     });
 }
 
-unigatordb.addUserToRsvpList = (user_id, event_id) => {
-    console.log("inside addUserToRsvpList")
+unigatordb.addUserToRsvpList = (event_id, user_id) => {
     return new Promise((resolve, reject) => {
         db.query(`INSERT INTO unigator.RSVPList (user_id, event_id) VALUES(?,?)`, [user_id, event_id], (err, results) => {
-            console.log("inside INSERT with result", results)
             if (err) {
-                console.log(err)
                 return reject({error: "User could not be added to RSVP list"});
             }
             return resolve({message: "User added to RSVP list successfully"})
@@ -114,11 +119,9 @@ unigatordb.addUserToRsvpList = (user_id, event_id) => {
     });
 }
 
-unigatordb.removeUserFromRsvpList = (user_id, event_id) => {
-    console.log("inside removeUserFromRsvpList")
+unigatordb.removeUserFromRsvpList = (event_id, user_id) => {
     return new Promise((resolve, reject) => {
         db.query(`DELETE FROM unigator.RSVPList WHERE user_id=? AND event_id=?`, [user_id, event_id], (err, results) => {
-            console.log(results)
             if (err) {
                 return reject({error: "User could not be removed from RSVP list"});
             }
