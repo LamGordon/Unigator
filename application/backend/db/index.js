@@ -78,10 +78,11 @@ unigatordb.eventsByCategory = (category) => {
 
 unigatordb.rsvpList = (event_id) => {
     return new Promise((resolve, reject) => {
-        db.query(`SELECT * FROM unigator.RSVPList WHERE event_id=?`, [event_id], async (err, results) => {
+        db.query(`SELECT User.user_id, User.name FROM unigator.User JOIN unigator.RSVPList 
+        ON RSVPList.user_id=User.user_id WHERE event_id=?`, [event_id], async (err, results) => {
             if (err) {
                 return reject(err);
-            }
+            }     
             return resolve(results)
         })
     });
