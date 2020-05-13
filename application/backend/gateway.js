@@ -86,7 +86,7 @@ app.post('/rsvp', async (req, res) => {
     let user_id = req.user_id;
 
     if (user_id == null) {
-      throw {error: "You are not legged in, can't RSVP to event"}
+      throw {error: "You are not logged in, can't RSVP to event"}
     }
     result = await unigatordb.rsvpUser(parseInt(user_id, 10), event_id);
     res.json(result);
@@ -103,7 +103,7 @@ app.post('/rsvpList', async (req, res) => {
     let user_id = req.user_id;
 
     if (user_id == null) {
-      throw {error: "You are not legged in, can't get RSVP list for event"}
+      throw {error: "You are not logged in, can't get RSVP list for event"}
     }
     result = await unigatordb.rsvpList(event_id);
     res.json(result);
