@@ -76,6 +76,61 @@ unigatordb.eventsByCategory = (category) => {
     });
 }
 
+unigatordb.rsvpList = (event_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT User.user_id, User.name FROM unigator.User JOIN unigator.RSVPList 
+        ON RSVPList.user_id=User.user_id WHERE event_id=?`, [event_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }     
+            return resolve(results)
+        })
+    });
+}
+
+unigatordb.rsvpUser = (user_id, event_id) => {
+    let response;
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.RSVPList WHERE event_id=? AND user_id=?`, [event_id,user_id], async (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            try {
+                if (result.length == 0) {
+                    response = await unigatordb.addUserToRsvpList(event_id, user_id)
+                } else {
+                    response = await unigatordb.removeUserFromRsvpList(event_id, user_id)
+                }
+            } catch {
+                return reject(response)
+            }
+            return resolve(response)
+        })
+    });
+}
+
+unigatordb.addUserToRsvpList = (event_id, user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT INTO unigator.RSVPList (user_id, event_id) VALUES(?,?)`, [user_id, event_id], (err, results) => {
+            if (err) {
+                return reject({error: "User could not be added to RSVP list"});
+            }
+            return resolve({message: "User added to RSVP list successfully"})
+        })
+    });
+}
+
+unigatordb.removeUserFromRsvpList = (event_id, user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`DELETE FROM unigator.RSVPList WHERE user_id=? AND event_id=?`, [user_id, event_id], (err, results) => {
+            if (err) {
+                return reject({error: "User could not be removed from RSVP list"});
+            }
+            return resolve({message: "User removed from RSVP list successfully"})
+        })
+    });
+}
+
 unigatordb.createAccount = async (email, password) => {
     return new Promise(async (resolve, reject) => {
         password = await bcrypt.hash(password, saltRounds);
@@ -90,12 +145,13 @@ unigatordb.createAccount = async (email, password) => {
     })
 }
 
-unigatordb.registerUser = (supervisor = 0, name, desc = "Empty", year, email, password) => {
+unigatordb.registerUser = (name, desc = "Empty", year, email, password, point_balance = 0) => {
     return new Promise(async (resolve, reject) => {
         try {
             acc_id = await unigatordb.createAccount(email, password);
-            db.query(`INSERT INTO unigator.User (supervisor, name, description, year, account_id) VALUES(?,?,?,?,?)`,
-                [supervisor, name, desc, year, acc_id], (err, results) => {
+            db.query(`INSERT INTO unigator.User (name, description, year, account_id, point_balance) VALUES(?,?,?,?,?)`,
+                [name, desc, year, acc_id, point_balance], (err, results) => {
+                    console.log(results)
                     if (err) {
                         //TODO: remove Account
                         reject(err);

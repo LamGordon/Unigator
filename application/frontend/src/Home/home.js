@@ -115,7 +115,7 @@ const Home = () => {
 
     return (
         <Root>
-            <Head>
+            <Head >
                 <h1>UniGator</h1>
                 <div className="fancy-btn">
                     <Button>Log in</Button>
