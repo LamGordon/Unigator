@@ -17,6 +17,7 @@ import {
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import About from "./pages/About/about";
 import Events from "./pages/Events/Events";
+import Results from './pages/SearchResults/Results';
 import Profile from "./pages/Profile/Profile";
 import EventDetail from "./pages/EventDetail/EventDetail";
 import Store from "./pages/Store/Store";
@@ -25,6 +26,7 @@ import styled from "styled-components";
 import axios from "axios";
 
 import logoImage from './assets/unigatorLogo.png';
+
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 axios.defaults.baseURL = "http://13.52.231.107:3003";
@@ -35,7 +37,21 @@ const RenderEvents = styled.div`
 	justify-content: space-evenly;
 `;
 
-// const Routes = (props) => {
+const Search = styled.label`
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  width: 300px;
+  & input {
+    flex: 1;
+    border: 2px solid black;
+    font-size: 18px;
+    margin-left: 7px;
+    padding: 2px 2px;
+  }
+`;
+
 class Routes extends React.Component {
   constructor(props) {
     super(props);
@@ -44,6 +60,14 @@ class Routes extends React.Component {
       searchEvent: "",
       category: "Categories",
       events: [],
+      pointshop: [],
+      signupName: '',
+      signupEmail: '',
+      signupPassword: '',
+      signupConfirmPassword: '',
+      signupYear: '',
+      loginEmail: '',
+      loginPassword: '',
       loginIsOpen: false,
       signupIsOpen: false,
       createEventIsOpen: false,
@@ -51,6 +75,8 @@ class Routes extends React.Component {
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInput = this.handleInput.bind(this);
+    this.handleSignup = this.handleSignup.bind(this);
+    this.handleLogin = this.handleLogin.bind(this);
   }
 
   handleInput(e) {
@@ -66,6 +92,7 @@ class Routes extends React.Component {
           .post(`/events`, { name: searchEvent })
           .then((res) => {
             this.setState({ events: res.data });
+            this.props.history.push("/results", { events: res.data })
           })
           .catch((err) => {
             console.log(err);
@@ -80,12 +107,60 @@ class Routes extends React.Component {
           })
           .then((res) => {
             this.setState({ events: res.data });
+            this.props.history.push("/results", { events: res.data })
           })
           .catch((err) => {
             console.log(err);
           });
     }
   }
+
+  handleSignup(e) {
+    const { signupName, signupEmail, signupPassword, signupConfirmPassword, signupYear } = this.state;
+    e.preventDefault();
+
+    if ((signupName !== '' && signupEmail !== '' && signupPassword !== '' && signupConfirmPassword !== '' && signupYear !== '') && signupPassword === signupConfirmPassword) {
+      axios
+          .post(`/register`, { name: signupName, email: signupEmail, password: signupPassword, year: signupYear})
+          .then((res) => {
+            console.log(res);
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      console.log("Valid signup form");
+      this.setState({
+        signupIsOpen: ! this.state.signupIsOpen
+      })
+    } else {
+      console.log("Invalid signup form");
+    }
+  }
+
+  handleLogin(e) {
+    const { loginEmail, loginPassword } = this.state;
+    e.preventDefault();
+
+    if (loginEmail !== '' && loginPassword !== '') {
+      axios
+          .post(`/login`, { email: loginEmail, password: loginPassword})
+          .then((res) => {
+            console.log(res);
+            console.log(res.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      console.log("Valid login form");
+      this.setState({
+        loginIsOpen: ! this.state.loginIsOpen
+      })
+    } else {
+      console.log("Invalid signup form");
+    }
+  }
+
 
   onClickHandler = (category) => {
     const value = category.target.getAttribute("value");
@@ -177,11 +252,11 @@ class Routes extends React.Component {
             <Form>
               <Form.Group controlId="formBasicEmail">
                 <Form.Label style={{fontWeight:'bold'}}>Email address</Form.Label>
-                <Form.Control type="email" placeholder="Enter San Francisco State University Email" />
+                <Form.Control type="email" name="loginEmail" onChange={this.handleInput} placeholder="Enter San Francisco State University Email" />
               </Form.Group>
               <Form.Group controlId="formBasicPassword">
                 <Form.Label style={{fontWeight:'bold'}}>Password</Form.Label>
-                <Form.Control type="password" placeholder="Enter Password" />
+                <Form.Control type="password" name="loginPassword" onChange={this.handleInput} placeholder="Enter Password" />
               </Form.Group>
               <Form.Group controlId="formBasicCheckbox">
                 <Form.Check type="checkbox" label="Remember me" />
@@ -192,7 +267,7 @@ class Routes extends React.Component {
             </Button>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary">Log In</Button>
+            <Button variant="primary" onClick={this.handleLogin}>Log In</Button>
             <Button variant="secondary" onClick={this.toggleLoginModal.bind(this)}>Cancel</Button>
           </Modal.Footer>
         </Modal>
@@ -215,15 +290,15 @@ class Routes extends React.Component {
             <Form>
               <Form.Group controlId="formBasicEmail">
                 <Form.Label style={{fontWeight:'bold'}}><br/>San Francisco State University Email</Form.Label>
-                <Form.Control type="email" placeholder="Enter San Francisco State University Email" />
+                <Form.Control type="email" name="signupEmail" onChange={this.handleInput} placeholder="Enter San Francisco State University Email" />
               </Form.Group>
-              <Form.Group controlId="formBasicUsername">
+              <Form.Group controlId="formBasicName">
                 <Form.Label style={{fontWeight:'bold'}}>Your Name</Form.Label>
-                <Form.Control type="username" placeholder="Enter Full Name" />
+                <Form.Control type="text" name="signupName" onChange={this.handleInput} placeholder="Enter Full Name" />
               </Form.Group>
               <Form.Group controlId="formBasicPassword">
                 <Form.Label style={{fontWeight:'bold'}}>Password</Form.Label>
-                <Form.Control type="password" placeholder="Enter Password" />
+                <Form.Control type="password" name="signupPassword" onChange={this.handleInput} placeholder="Enter Password" />
               </Form.Group>
               <Form.Text className="text-muted">
                 Password must contain:
@@ -232,9 +307,13 @@ class Routes extends React.Component {
                 <li>Uppercase Letters</li>
                 <li>Lowercase Letters</li>
               </Form.Text>
-              <Form.Group controlId="formBasicPassword">
+              <Form.Group controlId="Password">
                 <Form.Label style={{fontWeight:'bold'}}>Confirm Password</Form.Label>
-                <Form.Control type="password" placeholder="Confirm Password" />
+                <Form.Control type="password" name="signupConfirmPassword" onChange={this.handleInput} placeholder="Confirm Password" />
+              </Form.Group>
+              <Form.Group controlId="formBasicYear">
+                <Form.Label style={{fontWeight:'bold'}}>Year</Form.Label>
+                <Form.Control type="number" name="signupYear" onChange={this.handleInput} placeholder="Year" />
               </Form.Group>
             </Form>
             <Button style={{color: 'blue', background: 'none', border: 'none'}} onClick={this.signupToLoginModal.bind(this)}>
@@ -250,7 +329,7 @@ class Routes extends React.Component {
             </Form.Check>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="primary">Sign Up</Button>
+            <Button variant="primary" onClick={this.handleSignup}>Sign Up</Button>
             <Button variant="secondary" onClick={this.toggleSignupModal.bind(this)}>Cancel</Button>
           </Modal.Footer>
         </Modal>
@@ -464,13 +543,16 @@ class Routes extends React.Component {
               </Col>
               <Col>
                 <Form inline onSubmit={this.handleSubmit} style={{color:'white'}}>
-                  <input
-                      type="text"
-                      name="searchEvent"
-                      placeholder="Search for Events"
-                      onChange={this.handleInput}
-                  />
-                  <Button className="submit-btn" variant="primary" type="submit">Search</Button>
+                  <Search>
+                    Search:
+                    <input
+                        type="text"
+                        name="searchEvent"
+                        placeholder="Search for Events"
+                        onChange={this.handleInput}
+                    />
+                  </Search>
+                  <Button className="submit-btn" variant="primary" type="submit">Submit</Button>
                   <Dropdown className="my-dropdown">
                     <Dropdown.Toggle variant="success" id="dropdown-basic">
                       {category}
@@ -513,9 +595,8 @@ class Routes extends React.Component {
               <Route path="/store">
                 <Store/>
               </Route>
-              <Route path="/">
-                <Events/>
-              </Route>
+              <Route path="/results" component={Results} />
+              <Route path="/" component={Events} exact />
             </Switch>
           </div>
           {this.renderLogin()}
