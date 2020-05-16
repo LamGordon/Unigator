@@ -22,6 +22,31 @@ app.use((req, res, next) => {
   next();
 })
 
+app.post('/createEvent', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.user_id;
+    let categories = req.body.categories;
+    let name = req.body.name;
+    let date = req.body.date;
+    let time = req.body.time;
+    let description = req.body.description;
+    let status = req.body.status;
+    let location = req.body.location;
+
+    if (user_id == null) {
+      throw { error: "You are not logged in, can't create event" }
+    }
+    if (status != null, name != null, location != null, description != null, date != null, time != null, categories != null) {
+      result = await unigatordb.eventInsert(status, name, location, description, date, time, categories[0], categories[2], user_id);
+      res.json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+  }
+})
+
 app.post('/events', async (req, res) => {
   try {
     let result;
@@ -86,7 +111,7 @@ app.post('/rsvp', async (req, res) => {
     let user_id = req.user_id;
 
     if (user_id == null) {
-      throw {error: "You are not logged in, can't RSVP to event"}
+      throw { error: "You are not logged in, can't RSVP to event" }
     }
     result = await unigatordb.rsvpUser(parseInt(user_id, 10), event_id);
     res.json(result);
@@ -103,7 +128,7 @@ app.post('/rsvpList', async (req, res) => {
     let user_id = req.user_id;
 
     if (user_id == null) {
-      throw {error: "You are not logged in, can't get RSVP list for event"}
+      throw { error: "You are not logged in, can't get RSVP list for event" }
     }
     result = await unigatordb.rsvpList(event_id);
     res.json(result);
@@ -162,8 +187,8 @@ app.post('/register', async (req, res) => {
 app.get('/pointshop', async (req, res) => { //used to display point shop
   try {
     let result;
-      result = await unigatordb.getPointShop();
-      res.json(result);
+    result = await unigatordb.getPointShop();
+    res.json(result);
   } catch (e) {
     console.log(e);
     res.sendStatus(500);
@@ -176,12 +201,12 @@ app.post('/buyItem', async (req, res) => {  //used to buy items from pointshop
     let user_id = req.user_id;
     let item_id = req.body.item_id;
     let item_cost = req.body.item_cost;
-    if(user_id!=null) {
+    if (user_id != null) {
       result = await unigatordb.pointShopBuyItem(user_id, item_id, item_cost);
-      res.json({message: result.message});
+      res.json({ message: result.message });
     }
-    if (user_id==null) {
-      throw { error: "User is not logged in, cannot get purchased items."};
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot get purchased items." };
     }
   } catch (e) {
     console.log(e);
@@ -193,12 +218,12 @@ app.get('/purchaseditems', async (req, res) => {    //used to display what user 
   try {
     let result;
     let user_id = req.user_id;
-    if(user_id!=null) {
+    if (user_id != null) {
       result = await unigatordb.getAllPurchasedItems(user_id);
       res.json(result);
     }
-    if (user_id==null) {
-      throw {error: "User is not logged in, cannot get purchased items."};
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot get purchased items." };
     }
   } catch (e) {
     console.log(e);
