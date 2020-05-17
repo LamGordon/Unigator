@@ -49,15 +49,119 @@ unigatordb.eventsByDate = (date) => {
     });
 }
 
-unigatordb.eventInsert = (name, location, desc, date, time) => {
+unigatordb.eventInsert = (status = "pending", name, location, description, date, time, firstCategory, secondCategory, user_id) => {
     return new Promise((resolve, reject) => {
-        db.query(`INSERT INTO unigator.Event  (event_id, name, location, desc, date, time) VALUES = ?`,
-            [name, location, desc, date, time], (err, results) => {
+        let response = { message: {} };
+        console.log("\tInside eventInsert")
+        db.query(`INSERT INTO unigator.Event  (status, name, location, description, date, time) VALUES(?,?,?,?,?,?)`,
+            [status, name, location, description, date, time], async (err, result) => {
                 if (err) {
-                    return reject(err);
+                    return reject({ error: "Event could not be created" });
                 }
-                return resolve(results[0])
+                let event_id = result.insertId;
+                try {
+                    host_id = await unigatordb.addToHostCount(user_id);
+                    response.message.eventHost = await unigatordb.eventHost(host_id, event_id, user_id)
+                    if (firstCategory && secondCategory) {
+                        response.message.firstCategory = await unigatordb.eventCategory(event_id, firstCategory)
+                        response.message.secondCategory = await unigatordb.eventCategory(event_id, secondCategory)
+                    } else if (firstCategory) {
+                        response.message.category = await unigatordb.eventCategory(event_id, firstCategory)
+                    } else if (secondCategory) {
+                        response.message.category = await unigatordb.eventCategory(event_id, secondCategory)
+                    }
+                } catch {
+                    console.log(response);
+                }
+                console.log(response);
+                return resolve(response)
             })
+    });
+}
+
+unigatordb.eventHost = (host_id, event_id, user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT INTO unigator.EventHost (host_id, event_id) VALUES(?,?)`, [host_id, event_id], async (err, results) => {
+            if (err) {
+                return reject("Host could not be assigned to event");
+            }
+            user_name = await unigatordb.getUserInfoFromUserId(user_id);
+            return resolve(user_name.name)
+        })
+    });
+}
+
+unigatordb.addToHostCount = (user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.Host WHERE user_id=?`, [user_id], async (err, result) => {
+            if (err) {
+                return reject("There was an error in the query");
+            }
+            let host_id;
+
+            if (result.length == 0) {
+                host_id = await unigatordb.createHost(user_id);
+            } else {
+                host_id = await unigatordb.updateHost(user_id);
+            }
+            return resolve(host_id)
+        })
+    });
+}
+
+unigatordb.createHost = (user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT INTO unigator.Host (user_id, event_count) VALUES(?,?)`, [user_id, 1], (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(result.insertId)
+        })
+    });
+}
+
+unigatordb.updateHost = (user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`UPDATE unigator.Host SET event_count = event_count + 1 WHERE user_id = ?`, [user_id], async (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            host_info = await unigatordb.getHostInfoFromUserId(user_id);
+            return resolve(host_info[0].host_id)
+        })
+    });
+}
+
+unigatordb.getHostInfoFromUserId = (user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.Host WHERE user_id = ?`, [user_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
+        })
+    });
+}
+
+unigatordb.eventCategory = (event_id, category) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT INTO unigator.EventCategory (event_id, category_id) VALUES(?,?)`, [event_id, category], (err, results) => {
+            if (err) {
+                return reject("Event and Category could not be connected");
+            }
+            return resolve("Event and Category connected successfully")
+        })
+    });
+}
+
+unigatordb.categories = () => {
+    return new Promise((resolve, reject) => {
+        db.query(`Select Category.category_id, Category.type, Category.description FROM unigator.Category`, [], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results)
+        })
     });
 }
 
@@ -76,6 +180,61 @@ unigatordb.eventsByCategory = (category) => {
     });
 }
 
+unigatordb.rsvpList = (event_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT User.user_id, User.name FROM unigator.User JOIN unigator.RSVPList 
+        ON RSVPList.user_id=User.user_id WHERE event_id=?`, [event_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results)
+        })
+    });
+}
+
+unigatordb.rsvpUser = (user_id, event_id) => {
+    let response;
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.RSVPList WHERE event_id=? AND user_id=?`, [event_id, user_id], async (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            try {
+                if (result.length == 0) {
+                    response = await unigatordb.addUserToRsvpList(event_id, user_id)
+                } else {
+                    response = await unigatordb.removeUserFromRsvpList(event_id, user_id)
+                }
+            } catch {
+                return reject(response)
+            }
+            return resolve(response)
+        })
+    });
+}
+
+unigatordb.addUserToRsvpList = (event_id, user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT INTO unigator.RSVPList (user_id, event_id) VALUES(?,?)`, [user_id, event_id], (err, results) => {
+            if (err) {
+                return reject({ error: "User could not be added to RSVP list" });
+            }
+            return resolve({ message: "User added to RSVP list successfully" })
+        })
+    });
+}
+
+unigatordb.removeUserFromRsvpList = (event_id, user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`DELETE FROM unigator.RSVPList WHERE user_id=? AND event_id=?`, [user_id, event_id], (err, results) => {
+            if (err) {
+                return reject({ error: "User could not be removed from RSVP list" });
+            }
+            return resolve({ message: "User removed from RSVP list successfully" })
+        })
+    });
+}
+
 unigatordb.createAccount = async (email, password) => {
     return new Promise(async (resolve, reject) => {
         password = await bcrypt.hash(password, saltRounds);
@@ -90,12 +249,13 @@ unigatordb.createAccount = async (email, password) => {
     })
 }
 
-unigatordb.registerUser = (supervisor = 0, name, desc = "Empty", year, email, password) => {
+unigatordb.registerUser = (name, desc = "Empty", year, email, password, point_balance = 0) => {
     return new Promise(async (resolve, reject) => {
         try {
             acc_id = await unigatordb.createAccount(email, password);
-            db.query(`INSERT INTO unigator.User (supervisor, name, description, year, account_id) VALUES(?,?,?,?,?)`,
-                [supervisor, name, desc, year, acc_id], (err, results) => {
+            db.query(`INSERT INTO unigator.User (name, description, year, account_id, point_balance) VALUES(?,?,?,?,?)`,
+                [name, desc, year, acc_id, point_balance], (err, results) => {
+                    console.log(results)
                     if (err) {
                         //TODO: remove Account
                         reject(err);
@@ -116,8 +276,8 @@ unigatordb.loginUser = (email, password) => {
                 return reject({ error: "Invalid Email or password" });
             }
             user = await unigatordb.getUserInfo(result[0].acc_id)
-            let token = jwt.sign({user_id: user[0].user_id}, 'CookieSecretUserAuth', {expiresIn: 86400});
-            return resolve({ 
+            let token = jwt.sign({ user_id: user[0].user_id }, 'CookieSecretUserAuth', { expiresIn: 86400 });
+            return resolve({
                 message: "User login successfully",
                 newToken: token
             })
@@ -137,12 +297,12 @@ unigatordb.getUserInfo = (acc_id) => {
 }
 
 unigatordb.getUserInfoFromUserId = (user_id) => {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
         db.query(`SELECT * FROM unigator.User WHERE user_id = ?`, [user_id], (err, results) => {
             if (err) {
                 return reject(err);
             }
-            return resolve(results);
+            return resolve(results[0]);
         })
     });
 }
@@ -177,20 +337,20 @@ unigatordb.getAllPurchasedItems = (user_id) => { //retrives id of items purchase
 unigatordb.pointShopBuyItem = (user_id, item_id, item_cost) => {          //used to buy an item from the points shop for current user
     return new Promise(async (resolve, reject) => {
         try {
-            if (user_id==null) {
+            if (user_id == null) {
                 return reject({ error: "Please login if you wish to make a purchase." });
             }
             let current_user_info = await unigatordb.getUserInfoFromUserId(user_id);
             let user_pointBalance = current_user_info[0].point_balance;
             if (user_pointBalance < item_cost) {        //check if user has enough points to make purchase.
-                return reject({ error: "Insufficient amount of points."});
-            }  
+                return reject({ error: "Insufficient amount of points." });
+            }
             else if (user_pointBalance >= item_cost) {
-                db.query(`INSERT IGNORE INTO unigator.PurchasedItems (user_id, item_id, enabled) VALUES(?,?,0)`, [user_id, item_id], async(err, results) => {
+                db.query(`INSERT IGNORE INTO unigator.PurchasedItems (user_id, item_id, enabled) VALUES(?,?,0)`, [user_id, item_id], async (err, results) => {
                     if (err) {
                         reject({ error: "System was unable to add this item to your account." });
                     }
-                    await unigatordb.updatePointBalance(user_id, (-1*item_cost));
+                    await unigatordb.updatePointBalance(user_id, (-1 * item_cost));
                     return resolve({ message: "Purchase Sucessful: The item you selected has been added to your account" })
                 })
             }
