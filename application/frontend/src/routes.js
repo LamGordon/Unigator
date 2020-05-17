@@ -30,6 +30,7 @@ import logoImage from './assets/unigatorLogo.png';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 axios.defaults.baseURL = "http://13.52.231.107:3003";
+// axios.defaults.baseURL = "http://localhost:3003";
 
 const RenderEvents = styled.div`
 	background-color: #f8f8f8;
@@ -71,12 +72,13 @@ class Routes extends React.Component {
       loginIsOpen: false,
       signupIsOpen: false,
       createEventIsOpen: false,
-      carouselShow: true,
+      isLoggedIn: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInput = this.handleInput.bind(this);
     this.handleSignup = this.handleSignup.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
 
   handleInput(e) {
@@ -119,16 +121,22 @@ class Routes extends React.Component {
     const { signupName, signupEmail, signupPassword, signupConfirmPassword, signupYear } = this.state;
     e.preventDefault();
 
-    if ((signupName !== '' && signupEmail !== '' && signupPassword !== '' && signupConfirmPassword !== '' && signupYear !== '') && signupPassword === signupConfirmPassword) {
+    if ((signupName !== '' && signupEmail !== '' && signupPassword !== '' &&
+        signupConfirmPassword !== '' && signupYear !== '') && signupPassword === signupConfirmPassword) {
       axios
-          .post(`/register`, { name: signupName, email: signupEmail, password: signupPassword, year: signupYear})
-          .then((res) => {
-            console.log(res);
-            console.log(res.data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        .post(`/register`, {
+          name: signupName,
+          email: signupEmail,
+          password: signupPassword,
+          year: signupYear
+        })
+        .then((res) => {
+          console.log(res);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       console.log("Valid signup form");
       this.setState({
         signupIsOpen: ! this.state.signupIsOpen
@@ -148,6 +156,9 @@ class Routes extends React.Component {
           .then((res) => {
             console.log(res);
             console.log(res.data);
+            this.setState({
+              isLoggedIn: true
+            })
           })
           .catch((err) => {
             console.log(err);
@@ -158,6 +169,28 @@ class Routes extends React.Component {
       })
     } else {
       console.log("Invalid signup form");
+    }
+  }
+
+  handleLogout(e) {
+    const { isLoggedIn } = this.state;
+    // e.preventDefault();
+
+    if (isLoggedIn) {
+      axios
+          .post('/logout')
+          .then((res) => {
+            console.log(res);
+            console.log(res.data);
+            this.setState({
+              isLoggedIn: false
+            })
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+    } else {
+      console.log('Not Logged In')
     }
   }
 
@@ -531,7 +564,7 @@ class Routes extends React.Component {
     console.log("------------------------------------");
     console.log("State: ", this.state);
     console.log("------------------------------------");
-    const { category, events } = this.state;
+    const { category, events, isLoggedIn } = this.state;
     return (
         <Router>
           <div>
@@ -572,13 +605,31 @@ class Routes extends React.Component {
                 </Form>
               </Col>
               <div className="fancy-btn">
-                <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>
-                <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
-                <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
-                <Button href='/profile' variant="outline-primary">My profile</Button>
-                <Button href='/store' variant="outline-primary">Store</Button>
+                {isLoggedIn
+                    ?
+                    <>
+                      <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>
+                      <Link to='/store'>
+                        <Button variant="outline-primary">Store</Button>
+                      </Link>
+                      <Link to='/profile'>
+                        <Button variant="outline-primary">My profile</Button>
+                      </Link>
+                      <Button variant="outline-primary" onClick={this.handleLogout}>Log Out</Button>
+                    </>
+                    :
+                    <>
+                      <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
+                      <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
+                    </>
+                }
               </div>
             </Navbar>
+            {this.renderLogin()}
+            {this.renderSignUp()}
+            {this.renderCreateEvent()}
+            {this.renderTermsAndAgreement()}
+            {this.renderEvents()}
 
             {/* A <Switch> looks through its children <Route>s and
              renders the first one that matches the current URL. */}
@@ -599,11 +650,6 @@ class Routes extends React.Component {
               <Route path="/" component={Events} exact />
             </Switch>
           </div>
-          {this.renderLogin()}
-          {this.renderSignUp()}
-          {this.renderCreateEvent()}
-          {this.renderEvents()}
-          {this.renderTermsAndAgreement()}
         </Router>
     );
   }

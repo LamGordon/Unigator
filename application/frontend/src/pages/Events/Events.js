@@ -24,7 +24,7 @@ import gatorImage from '../../assets/gatorImage.png';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 //const base_url = is_production ? "http://ec2-54-193-95-217.us-west-1.compute.amazonaws.com:3003" : "http://localhost:3003";
-axios.defaults.baseURL = "http://13.52.231.107:3003";
+// axios.defaults.baseURL = "http://13.52.231.107:3003";
 
 const Root = styled.div`
   display: flex;
