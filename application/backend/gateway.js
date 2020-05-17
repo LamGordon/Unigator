@@ -126,6 +126,8 @@ app.post('/register', async (req, res) => {
   }
 });
 
+//beginning of Point Shop functions.
+
 app.get('/pointshop', async (req, res) => { //used to display point shop
   try {
     let result;
@@ -173,7 +175,6 @@ app.get('/purchaseditems', async (req, res) => {    //used to display what user 
   }
 });
 
-
 app.post('/toggleItem', async (req, res) => {
   try {
     let result;
@@ -183,12 +184,10 @@ app.post('/toggleItem', async (req, res) => {
     let item_type = req.body.type;
 
     if (user_id != null && item_id != null && enabled == 1 && item_type != null) {  //if item is enabled, disables item
-      console.log("\n~~~~~ INSIDE TOGGLE ITEM 1 ~~~~~\n")
       result = await unigatordb.disableItem(user_id, item_id, enabled);
       res.json(result);
     }
     else if (user_id != null && item_id != null && enabled == 0 && item_type != null) { //if item is disabled, disables all of same type then enables it.
-      console.log("\n~~~~~ INSIDE TOGGLE ITEM 2 ~~~~~\n")
       await unigatordb.disableItemByType(user_id, item_type);
       result = await unigatordb.enableItem(user_id, item_id, enabled);
       res.json(result);
@@ -198,5 +197,7 @@ app.post('/toggleItem', async (req, res) => {
     res.status(412).send(e);
   }
 });
+
+//end of Point Shop functions.
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))

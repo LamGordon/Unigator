@@ -147,6 +147,8 @@ unigatordb.getUserInfoFromUserId = (user_id) => {
     });
 }
 
+//beginning of Point Shop endpoints.
+
 unigatordb.getPointShop = () => {   //retrives all items purchasable in points shop
     return new Promise(async (resolve, reject) => {
         db.query(`SELECT * FROM unigator.PointShop ORDER BY type, cost;`, (err, results) => {
@@ -262,6 +264,8 @@ unigatordb.disableItemByType = (user_id, type) => {    //disables all purchased 
         }
     });
 }
+
+//end of Point Shop endpoints.
 
 
 unigatordb.tempalte = () => {
