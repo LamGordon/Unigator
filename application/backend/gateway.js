@@ -263,7 +263,7 @@ app.post('/toggleItem', async (req, res) => {
 app.post('/authorizeEvent', async (req, res) => {
   try {
     let result;
-    let user_id = req.body.user_id; //testing
+    let user_id = req.user_id;
     let event_id = req.body.event_id;
 
     if (user_id != null && event_id != null) {

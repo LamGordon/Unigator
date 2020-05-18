@@ -444,7 +444,6 @@ unigatordb.getAuthorizedEvents = (event_id) => { //retrives list of authorized e
                 if (err) {
                     return reject("System was unable to retrieve a list of authorized events    .");
                 }
-                console.log("inside getauthoirzedevents, results = " + results);
                 return resolve(results);
             })
         }
@@ -454,7 +453,6 @@ unigatordb.getAuthorizedEvents = (event_id) => { //retrives list of authorized e
 
 unigatordb.getAdminId = (user_id) => { //retrives admin_id of current user.
     return new Promise((resolve, reject) => {
-        console.log("\n\n~~~~~Inside getAdminID~~~~~\n\n")
         db.query(`SELECT admin_id FROM unigator.Administrator WHERE user_id =?`, [user_id], (err, results) => {
             if (err) {
                 return reject("There was an error retreving your Administrator Id.");
@@ -479,7 +477,6 @@ unigatordb.authorizeEvent = (user_id, event_id) => { //adds event to AuthorizedE
         }
 
         ifExists = await unigatordb.getAuthorizedEvents(event_id);  //checks if event is already approved before trying to insert.
-        console.log("ifExists:" + ifExists)
         if(ifExists.length!=0) {
             return resolve("Event:" + event_id + " has already been approved by Admin:" + admin_id + ".")
         }
