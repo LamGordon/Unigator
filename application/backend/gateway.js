@@ -278,5 +278,45 @@ app.post('/authorizeEvent', async (req, res) => {
     res.status(403).send(e);
   }
 });
+
+app.post('/deauthorizeEvent', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.user_id;
+    let event_id = req.body.event_id;
+
+    if (user_id != null && event_id != null) {
+      result = await unigatordb.deauthorizeEvent(user_id, event_id);
+      res.json(result);
+    }
+    else if (user_id == null || event_id == null) {
+      throw { error: "Could not deauthorize event because of null data entry." }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+app.post('/requestEventReview', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.user_id;
+    let event_id = req.body.event_id;
+
+    if (user_id != null && event_id != null) {
+      result = await unigatordb.requestEventReview(user_id, event_id);
+      res.json(result);
+    }
+    else if (user_id == null || event_id == null) {
+      throw { error: "Could not post event for review because of null data entry." }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
 //end of Administrator endpoints.
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))

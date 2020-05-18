@@ -439,7 +439,7 @@ unigatordb.getAuthorizedEvents = (event_id) => { //retrives list of authorized e
                 return resolve(results);
             })
         }
-        else if (event_id==null) {
+        else if (event_id==null||event_id.length==0) {
             db.query(`SELECT * FROM unigator.AuthorizedEvents`, [event_id], (err, results) => {
                 if (err) {
                     return reject("System was unable to retrieve a list of authorized events    .");
@@ -465,7 +465,7 @@ unigatordb.getAdminId = (user_id) => { //retrives admin_id of current user.
     });
 }
 
-unigatordb.authorizeEvent = (user_id, event_id) => { //adds event to AuthorizedEvents table. Pass in event_id and user_id, checks if user is an admin.
+unigatordb.authorizeEvent = (user_id, event_id) => { //adds event to AuthorizedEvents table and changes status in Event table. Pass in event_id and user_id, checks if user is an admin.
     return new Promise(async (resolve, reject) => {
 
         admin_id = await unigatordb.getAdminId(user_id);        //check if user is an admin
@@ -478,7 +478,7 @@ unigatordb.authorizeEvent = (user_id, event_id) => { //adds event to AuthorizedE
 
         ifExists = await unigatordb.getAuthorizedEvents(event_id);  //checks if event is already approved before trying to insert.
         if(ifExists.length!=0) {
-            return resolve("Event:" + event_id + " has already been approved by Admin:" + admin_id + ".")
+            return resolve("Event:" + event_id + " has already been approved by Admin:" + ifExists[0].admin_id + ".")
         }
 
         db.query(`INSERT IGNORE INTO unigator.AuthorizedEvents (event_id, admin_id) VALUES(?,?)`, [event_id, admin_id], async (err, results) => {
@@ -495,13 +495,63 @@ unigatordb.authorizeEvent = (user_id, event_id) => { //adds event to AuthorizedE
     });
 }
 
-unigatordb.updateEventStatus = (event_id, status) => {    //updates status of event with event_id, insert literal string to status. Used in authorizeEvent with status = "authorized"
+unigatordb.deauthorizeEvent = (user_id, event_id) => { //removes event from AuthorizedEvents table and changes status in Event table. Pass in event_id and user_id, checks if user is an admin.
+    return new Promise(async (resolve, reject) => {
+
+        admin_id = await unigatordb.getAdminId(user_id);        //check if user is an admin
+        if (admin_id.length==0) {
+            return resolve("You are not an Administrator. You cannot deauthorize an event.");
+        }
+        else {
+            admin_id = admin_id[0].admin_id;
+        }
+
+        ifExists = await unigatordb.getAuthorizedEvents(event_id);  //checks if event is already approved before trying to delete.
+        if(ifExists.length!=0) {
+            db.query(`DELETE From unigator.AuthorizedEvents WHERE event_id = ?`, [event_id], async (err, results) => {
+                if (err) {
+                    return reject("There was an error unauthorizing event : " + event_id + " .");
+                }
+                else if (event_id==null||admin_id==null) {
+                    return reject("Event could not be deauthorized due to bad passed data.");
+                }
+                await unigatordb.updateEventStatus(event_id, "deauthorized");
+                return resolve("Event:" + event_id + " has been sucessfully deauthorized.");
+            })
+        }
+        else {
+            return resolve("Event:" + event_id + " is not an authorized event.")
+        }
+    });
+}
+
+unigatordb.requestEventReview = (user_id, event_id) => { //sets the event's status to "Review Requested". Also deauthorizes event if it was already authorized.
+    return new Promise(async (resolve, reject) => {
+
+        admin_id = await unigatordb.getAdminId(user_id);        //check if user is an admin
+        if (admin_id.length==0) {
+            return resolve("You are not an Administrator.");
+        }
+        else {
+            admin_id = admin_id[0].admin_id;
+        }
+        
+        if (event_id!=null) {
+            await unigatordb.deauthorizeEvent(user_id, event_id);
+            await unigatordb.updateEventStatus(event_id, "Review Requested");
+            return resolve("Event[" + event_id + "]'s status was sucessfully changed to 'Review Requested' .")
+        }
+        return reject("Unable to update the status of this event.");
+    });
+}
+
+unigatordb.updateEventStatus = (event_id, statusString) => {    //updates status of event with event_id, insert literal string to status. Used in authorizeEvent with status = "authorized"
     return new Promise((resolve, reject) => {
-        db.query(`UPDATE unigator.Event SET status = ? WHERE event_id = ?`, [status, event_id], async (err, result) => {
+        db.query(`UPDATE unigator.Event SET status = ? WHERE event_id = ?`, [statusString, event_id], async (err, result) => {
             if (err) {
                 return reject("Unable to update the status of this event.");
             }
-            return resolve("Event[" + event_id + "]'s status has been sucessfully updated to : " + status + ".");
+            return resolve("Event[" + event_id + "]'s status has been sucessfully updated to : " + statusString + ".");
         })
     });
 }
