@@ -184,7 +184,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-//beginning of Point Shop functions.
+//beginning of Point Shop endpoints.
 
 app.get('/pointshop', async (req, res) => { //used to display point shop
   try {
@@ -256,6 +256,27 @@ app.post('/toggleItem', async (req, res) => {
   }
 });
 
-//end of Point Shop functions.
+//end of Point Shop endpoints.
 
+//beginning of Administrator endpoints.
+
+app.post('/authorizeEvent', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.body.user_id; //testing
+    let event_id = req.body.event_id;
+
+    if (user_id != null && event_id != null) {
+      result = await unigatordb.authorizeEvent(user_id, event_id);
+      res.json(result);
+    }
+    else if (user_id == null || event_id == null) {
+      throw { error: "Could not authorize event because of null data entry." }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+//end of Administrator endpoints.
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))

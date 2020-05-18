@@ -307,7 +307,7 @@ unigatordb.getUserInfoFromUserId = (user_id) => {
     });
 }
 
-//beginning of Point Shop endpoints.
+//beginning of Point Shop functions.
 
 unigatordb.getPointShop = () => {   //retrives all items purchasable in points shop
     return new Promise(async (resolve, reject) => {
@@ -425,8 +425,91 @@ unigatordb.disableItemByType = (user_id, type) => {    //disables all purchased 
     });
 }
 
-//end of Point Shop endpoints.
+//end of Point Shop functions.
 
+//beginning of Admin functions.
+
+unigatordb.getAuthorizedEvents = (event_id) => { //retrives list of authorized events by event_id, leave null if you want whole table.
+    return new Promise((resolve, reject) => {
+        if (event_id!=null) {
+            db.query(`SELECT * FROM unigator.AuthorizedEvents WHERE event_id = ?`, [event_id], (err, results) => {
+                if (err) {
+                    return reject("The event has not been authorized.");
+                }
+                return resolve(results);
+            })
+        }
+        else if (event_id==null) {
+            db.query(`SELECT * FROM unigator.AuthorizedEvents`, [event_id], (err, results) => {
+                if (err) {
+                    return reject("System was unable to retrieve a list of authorized events    .");
+                }
+                console.log("inside getauthoirzedevents, results = " + results);
+                return resolve(results);
+            })
+        }
+
+    });
+}
+
+unigatordb.getAdminId = (user_id) => { //retrives admin_id of current user.
+    return new Promise((resolve, reject) => {
+        console.log("\n\n~~~~~Inside getAdminID~~~~~\n\n")
+        db.query(`SELECT admin_id FROM unigator.Administrator WHERE user_id =?`, [user_id], (err, results) => {
+            if (err) {
+                return reject("There was an error retreving your Administrator Id.");
+            }
+            else if (results!=null) {
+                return resolve(results);
+            }
+            return reject("System could not detect that you are an administrator.");;
+        })
+    });
+}
+
+unigatordb.authorizeEvent = (user_id, event_id) => { //adds event to AuthorizedEvents table. Pass in event_id and user_id, checks if user is an admin.
+    return new Promise(async (resolve, reject) => {
+
+        admin_id = await unigatordb.getAdminId(user_id);        //check if user is an admin
+        if (admin_id.length==0) {
+            return resolve("You are not an Administrator. You cannot authorize an event.");
+        }
+        else {
+            admin_id = admin_id[0].admin_id;
+        }
+
+        ifExists = await unigatordb.getAuthorizedEvents(event_id);  //checks if event is already approved before trying to insert.
+        console.log("ifExists:" + ifExists)
+        if(ifExists.length!=0) {
+            return resolve("Event:" + event_id + " has already been approved by Admin:" + admin_id + ".")
+        }
+
+        db.query(`INSERT IGNORE INTO unigator.AuthorizedEvents (event_id, admin_id) VALUES(?,?)`, [event_id, admin_id], async (err, results) => {
+            if (err) {
+                return reject("There was an error authorizing event : " + event_id + " .");
+            }
+            else if (event_id==null||admin_id==null) {
+                return reject("Event could not be approved due to bad passed data.");
+            }
+            await unigatordb.updateEventStatus(event_id, "authorized");
+            return resolve("Event:" + event_id + " has been sucessfully aproved.");
+            //there is no check if you try to authorize a non-existant event_id, although this is not an issue as it will not be inserted to db anyways.
+        })
+    });
+}
+
+unigatordb.updateEventStatus = (event_id, status) => {    //updates status of event with event_id, insert literal string to status. Used in authorizeEvent with status = "authorized"
+    return new Promise((resolve, reject) => {
+        db.query(`UPDATE unigator.Event SET status = ? WHERE event_id = ?`, [status, event_id], async (err, result) => {
+            if (err) {
+                return reject("Unable to update the status of this event.");
+            }
+            return resolve("Event[" + event_id + "]'s status has been sucessfully updated to : " + status + ".");
+        })
+    });
+}
+
+//end of Admin functions.
 
 unigatordb.tempalte = () => {
     return new Promise((resolve, reject) => {
