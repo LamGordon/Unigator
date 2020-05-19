@@ -41,7 +41,6 @@ class Store extends Component {
             .get(`/pointshop`, config)
             .then((res) => {
                 this.setState({ pointshop: res.data });
-                console.log(res.data);
             })
             .catch((err) => {
                 console.log(err);
