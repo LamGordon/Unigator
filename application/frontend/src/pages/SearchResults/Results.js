@@ -3,8 +3,6 @@ import {Card, Button, Row, Col, Container} from 'react-bootstrap';
 import styled from "styled-components";
 import {
     BrowserRouter as Router,
-    Switch,
-    Route,
     Link
 } from "react-router-dom";
 
@@ -17,7 +15,6 @@ const RenderEvents = styled.div`
 class Results extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             events: [],
         };
@@ -27,12 +24,14 @@ class Results extends React.Component {
         this.setState({events});
         console.log(events)
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.state.events == prevState.events){
+            this.setState(this.props.location.state)
+        }
+    }
     render() {
         const { events } = this.state;
-        //DATA NOT GETTING FETCHED HERE
-        console.log('------------------------------------');
-        console.log("Event : ", events);
-        console.log('------------------------------------');
         return (
         <RenderEvents>
             <Container>
