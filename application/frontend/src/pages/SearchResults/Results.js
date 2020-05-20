@@ -19,7 +19,7 @@ class Results extends React.Component {
         super(props);
 
         this.state = {
-            events: [1,2],
+            events: [],
         };
     }
     componentDidMount() {
@@ -34,32 +34,31 @@ class Results extends React.Component {
         console.log("Event : ", events);
         console.log('------------------------------------');
         return (
-            <RenderEvents>
-                Hello
-                <Container>
-                    <Row className="justify-content-md-center">
-                        {events.map((item) => (
-                            <Card style={{ width: "18rem" }}>
-                                <Card.Img
-                                    variant="top"
-                                    src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
-                                />
-                                <Card.Body>
-                                    <Card.Title>{item.name}</Card.Title>
-                                    <Card.Subtitle className="mb-2 text-muted">
-                                        {item.location}
-                                    </Card.Subtitle>
-                                    <Card.Text>{item.desc}</Card.Text>
-                                    <Button variant="link">Share</Button>
-                                    <Link to="/eventdetail">
-                                        <Button variant="link">Learn More</Button>
-                                    </Link>
-                                </Card.Body>
-                            </Card>
-                        ))}
-                    </Row>
-                </Container>
-            </RenderEvents>
+        <RenderEvents>
+            <Container>
+            <Row className="justify-content-md-center">
+                {events.map((item) => (
+                <Card style={{ width: "18rem" }}>
+                    <Card.Img
+                    variant="top"
+                    src="https://d3vhc53cl8e8km.cloudfront.net/hello-staging/wp-content/uploads/2017/12/22223742/Events-1200x630.jpg"
+                    />
+                    <Card.Body>
+                    <Card.Title>{item.name}</Card.Title>
+                    <Card.Subtitle className="mb-2 text-muted">
+                        {item.location}
+                    </Card.Subtitle>
+                    <Card.Text>{item.desc}</Card.Text>
+                    <Button variant="link">Share</Button>
+                    <Link to="/eventdetail">
+                        <Button variant="link">Learn More</Button>
+                    </Link>
+                    </Card.Body>
+                </Card>
+                ))}
+            </Row>
+            </Container>
+        </RenderEvents>
         );
     }
 }
