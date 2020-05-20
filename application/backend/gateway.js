@@ -231,4 +231,82 @@ app.get('/purchaseditems', async (req, res) => {    //used to display what user 
   }
 });
 
+
+
+
+
+//beginning of host endpoints
+
+app.get('/toggleHostPoints', async (req, res) => {    //toggles enabled_hp in Host table
+  try {
+    let result;
+    let user_id = req.user_id;
+    if (user_id != null) {
+      result = await unigatordb.toggleHostPoints(user_id);
+      res.json(result);
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot get purchased items." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
+
+app.get('/viewHostedEvents', async (req, res) => {    //gets list of events from this host.
+  try {
+    let result;
+    let user_id = req.user_id;
+    if (user_id != null) {
+      result = await unigatordb.viewHostedEvents(user_id);
+      res.json(result);
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
+app.get('/viewHostPointsHost', async (req, res) => {    //toggles enabled_hp in Host table
+  try {
+    let result;
+    let user_id = req.user_id;
+    if (user_id != null) {
+      result = await unigatordb.viewHostPointsHost(user_id);
+      res.json(result);
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot view who has your host points." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
+app.post('/updateHostPoints', async (req, res) => {  //used to buy items from pointshop
+  try {
+    let result;
+    let user_id = req.user_id;
+    let target_user_id = req.body.user_id;
+    let update_value = req.body.update_value;
+    if (user_id != null) {
+      result = await unigatordb.updateHostPointBalance(user_id, target_user_id, update_value);
+      res.json({ message: result.message });
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot update host points." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+//end of host endpoints
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))

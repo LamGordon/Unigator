@@ -367,6 +367,119 @@ unigatordb.updatePointBalance = (user_id, update_value) => {    //updates point 
     });
 }
 
+
+//beginning of host functionality
+
+unigatordb.getHostInfo = (user_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`Select host_id, hp_enabled FROM unigator.Host WHERE user_id = ?`, [user_id], (err, results) => {
+            if (results.length == 0) {
+                return reject({ error: "You are not a host." });
+            }
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results[0])
+        })
+    });
+}
+
+unigatordb.viewHostedEvents = (user_id) => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            host_info = await unigatordb.getHostInfo(user_id);
+            host_id=host_info.host_id;
+            db.query(`SELECT E.* FROM unigator.Events E, unigator.EventHost EH WHERE E.event_id = EH.event_id AND EH.host_id = ?`, [host_id], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results)
+            })
+        }catch(e){
+            reject(e);
+        }
+    })
+}
+
+unigatordb.toggleHostPoints = (user_id) => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            host_info = await unigatordb.getHostInfo(user_id);
+
+            if (host_info.hp_enabled) {
+                db.query(`UPDATE unigator.Host SET hp_enabled = 0 WHERE user_id = ?`, [user_id], (err, results) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve({ message: "Your host points have been sucessfully enabled." })
+                })
+            } 
+            if (!host_info.hp_enabled) {
+                db.query(`UPDATE unigator.Host SET hp_enabled = 1 WHERE user_id = ?`, [user_id], (err, results) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve({ message: "Your host points have been sucessfully disabled." })
+                })
+            } 
+        }catch(e){
+            reject(e);
+        }
+    });
+}
+
+unigatordb.updateHostPointBalance = (user_id, target_user_id, update_value) => {    //updates host point balance of user with update_value (pass user_id, not acc_id).
+    return new Promise(async (resolve, reject) => {
+        try{
+            host_info = await unigatordb.getHostInfo(user_id);
+            host_id = host_info.host_id;
+    
+            db.query(`SELECT * FROM unigator.HostPoints WHERE user_id = ? and host_id = ?`, [target_user_id, host_id], (err, results) => {
+                if (results.length==0) {
+                    db.query(`INSERT INTO unigator.HostPoints (user_id, host_id, points) VALUES (?,?,?) `, [target_user_id, host_id, update_value], (err, results)  => {
+                        if (err) {
+                            return reject({ error: "System was unable to insert your points." });
+                        }
+                        return resolve({ message: "Points have been inserted." })
+                    })
+                }
+                else if (results.length!=0) {
+                    db.query(`UPDATE unigator.HostPoints SET points = (points + ?) WHERE host_id = ? AND user_id = ?`, [update_value, host_id, target_user_id], (err, results)  => {
+                        if (err) {
+                            return reject({ error: "System was unable to update your points." });
+                        }
+                        return resolve({ message: "Points have been updated." })
+                    })
+                }
+            })
+        }catch(e){
+            reject(e);
+        }
+    })
+}
+
+
+unigatordb.viewHostPointsHost = (user_id) => {
+    return new Promise(async (resolve, reject) => {
+        try{
+            host_info = await unigatordb.getHostInfo(user_id);
+            host_id=host_info.host_id;
+
+            db.query(`SELECT U.user_id, U.name, U.picture, U.description, U.year, HP.points AS "host points" 
+                    FROM unigator.User U, unigator.HostPoints HP WHERE U.user_id = HP.user_id AND HP.host_id = ?`, [host_id], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results)
+            })
+        }catch(e){
+            reject(e);
+        }
+    })
+}
+
+//end of host functionality
+
 unigatordb.tempalte = () => {
     return new Promise((resolve, reject) => {
         db.query(``, [], (err, results) => {
