@@ -192,7 +192,7 @@ unigatordb.rsvpList = (event_id) => {
     });
 }
 
-unigatordb.rsvpUser = (user_id, event_id) => {
+unigatordb.rsvpUser = (user_id, event_id, pointShopPoints) => {
     let response;
     return new Promise((resolve, reject) => {
         db.query(`SELECT * FROM unigator.RSVPList WHERE event_id=? AND user_id=?`, [event_id, user_id], async (err, result) => {
@@ -202,8 +202,10 @@ unigatordb.rsvpUser = (user_id, event_id) => {
             try {
                 if (result.length == 0) {
                     response = await unigatordb.addUserToRsvpList(event_id, user_id)
+                    await unigatordb.updatePointBalance(user_id, pointsEarned);
                 } else {
                     response = await unigatordb.removeUserFromRsvpList(event_id, user_id)
+                    await unigatordb.updatePointBalance(user_id, (-1*pointsEarned));
                 }
             } catch {
                 return reject(response)
@@ -285,7 +287,7 @@ unigatordb.loginUser = (email, password) => {
     });
 }
 
-unigatordb.getUserInfo = (acc_id) => {
+unigatordb.getUserInfo = (acc_id) => {              //depreciated, since acc_id is no longer saved in the token
     return new Promise(async (resolve, reject) => {
         db.query(`SELECT * FROM unigator.User WHERE account_id = ?`, [acc_id], async (err, results) => {
             if (err) {
@@ -552,6 +554,26 @@ unigatordb.updateEventStatus = (event_id, statusString) => {    //updates status
                 return reject("Unable to update the status of this event.");
             }
             return resolve("Event[" + event_id + "]'s status has been sucessfully updated to : " + statusString + ".");
+        })
+    });
+}
+
+unigatordb.deleteAccount = (user_id, user_to_delete_id ,verification_phrase, verification_phrase_key) => {    //DELETES an account and user from the database. Used in place of Banning users for now. DO NOT GET user_to_delete_id FROM TOKEN(WILL DELETE YOUR OWN ACCOUNT).
+    return new Promise(async (resolve, reject) => {
+
+        admin_id = await unigatordb.getAdminId(user_id);        //check if user is an admin
+        if (admin_id.length==0) {
+            return resolve("You are not an Administrator. You cannot delete an account.");
+        }
+
+        user_to_delete_info = await unigatordb.getUserInfoFromUserId(user_to_delete_id);    //WARNING: DO NOT GET "user_to_delete_id" FROM TOKEN. THIS WILL DELETE YOUR OWN ACCOUNT.
+        account_id_to_delete = user_to_delete_info.acc_id;
+
+        db.query(`DELETE unigator.Account WHERE acc_id = ?`, [account_id_to_delete], (err, result) => {
+            if (err) {
+                return reject("System was unable to delete this user's account.");
+            }
+            return resolve("User[" + user_to_delete_id + "]'s account and user information has been permanently deleted.");
         })
     });
 }

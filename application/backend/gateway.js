@@ -109,11 +109,12 @@ app.post('/rsvp', async (req, res) => {
     let result;
     let event_id = req.body.event_id;
     let user_id = req.user_id;
+    let pointShopPoints = 50;
 
     if (user_id == null) {
       throw { error: "You are not logged in, can't RSVP to event" }
     }
-    result = await unigatordb.rsvpUser(parseInt(user_id, 10), event_id);
+    result = await unigatordb.rsvpUser(parseInt(user_id, 10), event_id, pointShopPoints);
     res.json(result);
   } catch (e) {
     console.log(e);
@@ -317,6 +318,28 @@ app.post('/requestEventReview', async (req, res) => {
   }
 });
 
+
+app.post('/deleteUserAccount', async (req, res) => {  //DELETES all user info and account associated with the "user_to_delete_id"'s user_id. Verification phrase is caps sensitive.
+  try {                                               //must be logged in as a administrator, please prompt admin to enter the verification phrase.
+    let result;
+    let user_id = req.user_id;
+    let user_to_delete_id = req.body.user_id;
+    let verification_phrase = req.body.verification_phrase;
+    let VERIFICATION_PHRASE_KEY = "I am 100% sure I wish to delete this account!";    //this is also checked in the function implementation against a literal string copy.
+
+    if (user_id == null||user_to_delete_id == null) {
+      throw { error: "Please provide the required data to execute this function." }
+    }
+    if (verification_phrase != VERIFICATION_PHRASE_KEY) {   //Checks provided verification_phrase against key, will not delete if not matched.
+      throw { error: "The verification phrase provided did not match; System could not continue with deletion of specified account." }
+    }
+    result = await unigatordb.deleteAccount(user_id, user_to_delete_id, verification_phrase);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(412).send(e);
+  }
+});
 //end of Administrator endpoints.
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
