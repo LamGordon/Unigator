@@ -342,6 +342,18 @@ unigatordb.pointShopBuyItem = (user_id, item_id, item_cost) => {          //used
             if (user_id == null) {
                 return reject({ error: "Please login if you wish to make a purchase." });
             }
+
+            //allows admins to buy items for free
+            admin_id = await unigatordb.getAdminId(user_id);        //check if user is an admin
+            if (admin_id.length>0) {
+                db.query(`INSERT IGNORE INTO unigator.PurchasedItems (user_id, item_id, enabled) VALUES(?,?,0)`, [user_id, item_id], async (err, results) => {
+                    if (err) {
+                        reject({ error: "System was unable to add this item to your account." });
+                    }
+                    return resolve({ message: "Admin Account: The item you selected has been added for free." })
+                })
+            }
+
             let current_user_info = await unigatordb.getUserInfoFromUserId(user_id);
             let user_pointBalance = current_user_info[0].point_balance;
             if (user_pointBalance < item_cost) {        //check if user has enough points to make purchase.
@@ -558,12 +570,16 @@ unigatordb.updateEventStatus = (event_id, statusString) => {    //updates status
     });
 }
 
-unigatordb.deleteAccount = (user_id, user_to_delete_id ,verification_phrase, verification_phrase_key) => {    //DELETES an account and user from the database. Used in place of Banning users for now. DO NOT GET user_to_delete_id FROM TOKEN(WILL DELETE YOUR OWN ACCOUNT).
+unigatordb.deleteAccount = (user_id, user_to_delete_id ,verification_phrase) => {    //DELETES an account and user from the database. Used in place of Banning users for now. DO NOT GET user_to_delete_id FROM TOKEN(WILL DELETE YOUR OWN ACCOUNT).
     return new Promise(async (resolve, reject) => {
 
         admin_id = await unigatordb.getAdminId(user_id);        //check if user is an admin
         if (admin_id.length==0) {
             return resolve("You are not an Administrator. You cannot delete an account.");
+        }
+
+        if (verification_phrase != "I am 100% sure I wish to delete this account!") {
+            return reject("The verification phrase you submitted did not match with the system's.");
         }
 
         user_to_delete_info = await unigatordb.getUserInfoFromUserId(user_to_delete_id);    //WARNING: DO NOT GET "user_to_delete_id" FROM TOKEN. THIS WILL DELETE YOUR OWN ACCOUNT.
