@@ -109,11 +109,12 @@ app.post('/rsvp', async (req, res) => {
     let result;
     let event_id = req.body.event_id;
     let user_id = req.user_id;
+    let pointShopPoints = 50;
 
     if (user_id == null) {
       throw { error: "You are not logged in, can't RSVP to event" }
     }
-    result = await unigatordb.rsvpUser(parseInt(user_id, 10), event_id);
+    result = await unigatordb.rsvpUser(parseInt(user_id, 10), event_id, pointShopPoints);
     res.json(result);
   } catch (e) {
     console.log(e);
@@ -184,6 +185,8 @@ app.post('/register', async (req, res) => {
   }
 });
 
+//beginning of Point Shop endpoints.
+
 app.get('/pointshop', async (req, res) => { //used to display point shop
   try {
     let result;
@@ -230,5 +233,113 @@ app.get('/purchaseditems', async (req, res) => {    //used to display what user 
     res.sendStatus(400);
   }
 });
+
+app.post('/toggleItem', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.user_id;
+    let item_id = req.body.item_id;
+    let enabled = req.body.enabled;
+    let item_type = req.body.type;
+
+    if (user_id != null && item_id != null && enabled == 1 && item_type != null) {  //if item is enabled, disables item
+      result = await unigatordb.disableItem(user_id, item_id, enabled);
+      res.json(result);
+    }
+    else if (user_id != null && item_id != null && enabled == 0 && item_type != null) { //if item is disabled, disables all of same type then enables it.
+      await unigatordb.disableItemByType(user_id, item_type);
+      result = await unigatordb.enableItem(user_id, item_id, enabled);
+      res.json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(412).send(e);
+  }
+});
+
+//end of Point Shop endpoints.
+
+//beginning of Administrator endpoints.
+
+app.post('/authorizeEvent', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.user_id;
+    let event_id = req.body.event_id;
+
+    if (user_id != null && event_id != null) {
+      result = await unigatordb.authorizeEvent(user_id, event_id);
+      res.json(result);
+    }
+    else if (user_id == null || event_id == null) {
+      throw { error: "Could not authorize event because of null data entry." }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+app.post('/deauthorizeEvent', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.user_id;
+    let event_id = req.body.event_id;
+
+    if (user_id != null && event_id != null) {
+      result = await unigatordb.deauthorizeEvent(user_id, event_id);
+      res.json(result);
+    }
+    else if (user_id == null || event_id == null) {
+      throw { error: "Could not deauthorize event because of null data entry." }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+app.post('/requestEventReview', async (req, res) => {
+  try {
+    let result;
+    let user_id = req.user_id;
+    let event_id = req.body.event_id;
+
+    if (user_id != null && event_id != null) {
+      result = await unigatordb.requestEventReview(user_id, event_id);
+      res.json(result);
+    }
+    else if (user_id == null || event_id == null) {
+      throw { error: "Could not post event for review because of null data entry." }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+
+app.post('/deleteUserAccount', async (req, res) => {  //DELETES all user info and account associated with the "user_to_delete_id"'s user_id. Verification phrase is caps sensitive.
+  try {                                               //must be logged in as a administrator, please prompt admin to enter the verification phrase.
+    let result;
+    let user_id = req.user_id;
+    let user_to_delete_id = req.body.user_id;
+    let verification_phrase = req.body.verification_phrase;
+    let VERIFICATION_PHRASE_KEY = "I am 100% sure I wish to delete this account!";    //this is also checked in the function implementation against a literal string copy.
+
+    if (user_id == null||user_to_delete_id == null) {
+      throw { error: "Please provide the required data to execute this function." }
+    }
+    if (verification_phrase != VERIFICATION_PHRASE_KEY) {   //Checks provided verification_phrase against key, will not delete if not matched.
+      throw { error: "The verification phrase provided did not match; System could not continue with deletion of specified account." }
+    }
+    result = await unigatordb.deleteAccount(user_id, user_to_delete_id, verification_phrase);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(412).send(e);
+  }
+});
+//end of Administrator endpoints.
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
