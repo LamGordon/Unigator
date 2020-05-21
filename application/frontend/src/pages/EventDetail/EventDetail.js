@@ -55,9 +55,9 @@ const EventDetail = () => {
                 <Row>
                     <Col xs lg="5">
                         <Jumbotron>
-                            <h1>{eventDetail.name}PLACEHOLDER</h1>
+                            <h1>{eventDetail.name}Mobile dev 101</h1>
                             <p style={{fontWeight: 'bold'}}>
-                               {eventDetail.date} PLACEHOLDER&emsp; {eventDetail.time}PLACEHOLDER &emsp; {eventDetail.location}PLACEHOLDER
+                               {eventDetail.date} 4/7/2020 &emsp; {eventDetail.time} 9:20 AM &emsp; {eventDetail.location}Towers Conference Center
                             </p>
                             <Row>
                                 <Col sm={8}>
@@ -71,7 +71,7 @@ const EventDetail = () => {
                         </Jumbotron>
                         <Jumbotron>
                             <h3>Event Description</h3>
-                            <p>{eventDetail.desc}PLACEHOLDER</p>
+                            <p>{eventDetail.desc}Lets learn how to create a mobile app</p>
                         </Jumbotron>
                     </Col>
                     <Col xs lg="7">
