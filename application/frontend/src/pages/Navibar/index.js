@@ -21,9 +21,9 @@ import DatePicker from 'react-date-picker';
 import TimePicker from 'react-time-picker';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
-// axios.defaults.baseURL = "http://13.52.231.107:3003";
+axios.defaults.baseURL = "http://13.52.231.107:3003";
 // use this instead when running backend locally
-axios.defaults.baseURL = "http://localhost:3003";
+// axios.defaults.baseURL = "http://localhost:3003";
 
 const RenderEvents = styled.div`
 	background-color: #f8f8f8;
