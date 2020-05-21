@@ -4,9 +4,13 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const cookieparser = require("cookie-parser")
 const jwt = require("jsonwebtoken")
+const bcrypt = require('bcrypt');
+
 
 const app = express()
 const port = 3003
+const saltRounds = 5;
+
 
 // create application/x-www-form-urlencoded parser
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -14,10 +18,31 @@ app.use(bodyParser.json());
 app.use(cookieparser());
 app.use(cors());
 
+// app.use((req, res, next) => {
+//   if (req.cookies['Token']) {
+//     var decoded = jwt.verify(req.cookies['Token'], 'CookieSecretUserAuth');
+//     req.user_id = decoded.user_id;
+//   }
+//   next();
+// })
+
+const authCheck = async (auth) => {
+  try {
+    const user_id = await unigatordb.checkSession(auth);
+    console.log(user_id)
+    return user_id;
+  } catch {
+    console.log("ERROR!")
+  }
+}
+
 app.use((req, res, next) => {
-  if (req.cookies['Token']) {
-    var decoded = jwt.verify(req.cookies['Token'], 'CookieSecretUserAuth');
-    req.user_id = decoded.user_id;
+  if (req.body.auth) {
+    console.log("inside check body.auth")
+    req.user_id = authCheck(req.body.auth)
+  } else if (req.params.auth) {
+    console.log("inside check params.auth")
+    req.user_id = authCheck(req.params.auth)
   }
   next();
 })
@@ -55,9 +80,11 @@ app.get('/eventDetails', async (req, res) => {
 
     if (user_id === null && event_id !== null) {
       result = await unigatordb.eventDetails(event_id);
+      res.json(result)
     }
     if (user_id !== null && event_id !== null) {
       result = await unigatordb.eventDetails(event_id);
+      result.message.host.email
       res.json(result);
     }
   } catch (e) {
@@ -166,8 +193,9 @@ app.post('/login', async (req, res) => {
 
     if (email != null && password != null) {
       result = await unigatordb.loginUser(email, password)
-      res.cookie('Token', result.newToken, { maxAge: 86400 });
-      res.json({ message: result.message });
+      // res.cookie('Token', result.newToken, { maxAge: 86400 });
+      console.log("\t\t\t",result)
+      res.json({ message: result.message, auth: result.auth });
     }
   } catch (e) {
     console.log(e);
