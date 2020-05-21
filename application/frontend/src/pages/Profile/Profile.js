@@ -5,10 +5,6 @@ import {
     Row,
     Col,
     Container,
-    Card,
-    Modal,
-    Form,
-    Carousel,
     Jumbotron,
 } from "react-bootstrap";
 
@@ -17,20 +13,21 @@ class Profile extends Component {
     render() {
         return (
             <Container>
+                <h1 style={{ textAlign: 'center' }}>My Profile</h1>
                 <Row>
                     <Col xs lg="5">
                         <Jumbotron>
                             <h1>Welcome, JohnSmith123!</h1>
-                            <img src="https://i.imgur.com/aoCg9r0.png"/>
-                            <a style={{fontWeight: 'bold'}}>Share your profile: </a>
+                            <img src="https://i.imgur.com/aoCg9r0.png" />
+                            <a style={{ fontWeight: 'bold' }}>Share your profile: </a>
                             <a href="https://www.facebook.com">
-                                <img src="https://i.imgur.com/vqfy6fF.png"/>
+                                <img src="https://i.imgur.com/vqfy6fF.png" />
                             </a>
                             <a href="https://www.instagram.com">
-                                <img src="https://i.imgur.com/MIS2GGQ.png"/>
+                                <img src="https://i.imgur.com/MIS2GGQ.png" />
                             </a>
                             <a href="https://www.twitter.com">
-                                <img src="https://i.imgur.com/0Bf2pk4.png"/>
+                                <img src="https://i.imgur.com/0Bf2pk4.png" />
                             </a>
                         </Jumbotron>
                     </Col>
