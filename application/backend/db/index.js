@@ -309,6 +309,53 @@ unigatordb.getUserInfoFromUserId = (user_id) => {
     });
 }
 
+//beginnig of save event stuff.
+
+unigatordb.saveThisEvent = (user_id, event_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT IGNORE INTO unigator.SavedEvents (user_id, event_id) VALUES (?,?);`, [user_id, event_id], (err, results) => {
+            if (err) {
+                return resolve({
+                    message: "Unable to save this event.",
+                    error: err
+                });
+            }
+            return resolve({ message: "Event has been sucessfully saved." })
+        })
+    });
+}
+
+
+unigatordb.unsaveThisEvent = (user_id, event_id) => {   //no check if it exists or not
+    return new Promise((resolve, reject) => {
+        db.query(`DELETE FROM unigator.SavedEvents WHERE user_id=? AND event_id=?;`, [user_id, event_id], (err, results) => {
+            if (err) {
+                return resolve({
+                    message: "Unable to un-save this event.",
+                    error: err
+                });
+            }
+            return resolve({ message: "Event has been sucessfully un-saved." })
+        })
+    });
+}
+
+unigatordb.getSavedEvents = (user_id) => {   //no check if it exists or not
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT E.* FROM unigator.Event E, unigator.SavedEvents SE 
+                WHERE E.event_id = SE.event_id AND E.user_id = ?;`, [user_id], (err, results) => {
+            if (err) {
+                return resolve({
+                    message: "Unable to load saved events.",
+                    error: err
+                });
+            }
+            return resolve(results);
+        })
+    });
+}
+//end of save event stuff.
+
 //beginning of Point Shop functions.
 
 unigatordb.getPointShop = () => {   //retrives all items purchasable in points shop

@@ -185,6 +185,58 @@ app.post('/register', async (req, res) => {
   }
 });
 
+//beginning of save event endpoints
+app.post('/saveEvent', async (req, res) => {    //connect this directly to an event or event details page as a button or whatnot.
+  try {
+    let result;
+    let event_id = req.body.event_id;
+    let user_id = req.user_id;
+
+    if (user_id == null) {
+      throw { error: "You are not logged in, can't save an event." }
+    }
+    result = await unigatordb.saveThisEvent(user_id, event_id);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+app.post('/unsaveEvent', async (req, res) => {    //connect this to the getSavedEvents endpoint, as there's no check for unsaving it if it does not exist.
+  try {
+    let result;
+    let event_id = req.body.event_id;
+    let user_id = req.user_id;
+
+    if (user_id == null) {
+      throw { error: "You are not logged in, can't un-save an event." }
+    }
+    result = await unigatordb.unsaveThisEvent(user_id, event_id);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+app.get('/getSavedEvents', async (req, res) => {  //this gets a list of (event details) of all saved events by a user. Connect unsave to here.
+  try {
+    let result;
+    let user_id = req.user_id;
+
+    if (user_id == null) {
+      throw { error: "You are not logged in, can't view your saved events list." }
+    }
+    result = await unigatordb.getSavedEvents(user_id);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+//end of save event endpoints
+
 //beginning of Point Shop endpoints.
 
 app.get('/pointshop', async (req, res) => { //used to display point shop
