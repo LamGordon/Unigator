@@ -16,6 +16,8 @@ const db = mysql.createPool({
 
 const unigatordb = {}
 
+// Beginning of Events Functions 
+
 unigatordb.events = () => {
     return new Promise((resolve, reject) => {
         db.query(`SELECT * FROM unigator.Event WHERE date >= ?`, [dateFormat(new Date(), 'yyyy-mm-dd HH:MM:ss')], (err, results) => {
@@ -52,7 +54,6 @@ unigatordb.eventsByDate = (date) => {
 unigatordb.eventInsert = (status = "pending", name, location, description, date, time, firstCategory, secondCategory, user_id) => {
     return new Promise((resolve, reject) => {
         let response = { message: {} };
-        console.log("\tInside eventInsert")
         db.query(`INSERT INTO unigator.Event  (status, name, location, description, date, time) VALUES(?,?,?,?,?,?)`,
             [status, name, location, description, date, time], async (err, result) => {
                 if (err) {
@@ -79,6 +80,67 @@ unigatordb.eventInsert = (status = "pending", name, location, description, date,
     });
 }
 
+unigatordb.eventDetails = (event_id) => {
+    let response = {message: {}};
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT * FROM unigator.Event WHERE event_id=?`,
+         [event_id], async (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+            host_id = await unigatordb.getHostForEvent(event_id)
+            host = await unigatordb.getHostByHostId(host_id[0].host_id)
+            user = await unigatordb.getUserInfoFromUserId(host[0].user_id)
+
+            response.message.host = host[0];
+            response.message.user = user;
+            response.message.event = result[0]; 
+
+            return resolve(response)
+        })
+    });
+}
+
+unigatordb.eventCategory = (event_id, category) => {
+    return new Promise((resolve, reject) => {
+        db.query(`INSERT INTO unigator.EventCategory (event_id, category_id) VALUES(?,?)`, [event_id, category], (err, results) => {
+            if (err) {
+                return reject("Event and Category could not be connected");
+            }
+            return resolve("Event and Category connected successfully")
+        })
+    });
+}
+
+unigatordb.categories = () => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT Category.category_id, Category.type, Category.description FROM unigator.Category`, [], (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results)
+        })
+    });
+}
+unigatordb.eventsByCategory = (category) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT event.* FROM unigator.Event event 
+        INNER JOIN unigator.EventCategory eventCategory ON event.event_id = eventCategory.event_id 
+        INNER JOIN unigator.Category category ON eventCategory.category_id=category.category_id 
+        WHERE category.type= ?`,
+            [category], (err, results) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(results)
+            })
+    });
+}
+
+// End of Event functions
+
+// Beginning of Host functions
+
 unigatordb.eventHost = (host_id, event_id, user_id) => {
     return new Promise((resolve, reject) => {
         db.query(`INSERT INTO unigator.EventHost (host_id, event_id) VALUES(?,?)`, [host_id, event_id], async (err, results) => {
@@ -87,6 +149,31 @@ unigatordb.eventHost = (host_id, event_id, user_id) => {
             }
             user_name = await unigatordb.getUserInfoFromUserId(user_id);
             return resolve(user_name.name)
+        })
+    });
+}
+
+unigatordb.getHostForEvent = (event_id) => {
+    return new Promise((resolve, reject) => {
+        db.query(`SELECT EventHost.host_id FROM unigator.EventHost WHERE event_id=?`, [event_id], async (err, result) => {
+            if (err) {
+                return reject("Could not get given query", err);
+            }
+            if (result.length === 0){
+                return reject("Could not find Host that created given event");
+            }
+            return resolve(result)
+        })
+    });
+}
+
+unigatordb.getHostByHostId = (host_id) => {              
+    return new Promise(async (resolve, reject) => {
+        db.query(`SELECT * FROM unigator.Host WHERE host_id = ?`, [host_id], async (err, results) => {
+            if (err) {
+                return reject(err);
+            }
+            return resolve(results);
         })
     });
 }
@@ -143,41 +230,20 @@ unigatordb.getHostInfoFromUserId = (user_id) => {
     });
 }
 
-unigatordb.eventCategory = (event_id, category) => {
-    return new Promise((resolve, reject) => {
-        db.query(`INSERT INTO unigator.EventCategory (event_id, category_id) VALUES(?,?)`, [event_id, category], (err, results) => {
-            if (err) {
-                return reject("Event and Category could not be connected");
-            }
-            return resolve("Event and Category connected successfully")
-        })
-    });
-}
+// End of Host functions
 
-unigatordb.categories = () => {
+// Beginning of User functions
+
+unigatordb.userProfile = (user_id) => {
     return new Promise((resolve, reject) => {
-        db.query(`Select Category.category_id, Category.type, Category.description FROM unigator.Category`, [], (err, results) => {
+        db.query(`SELECT * FROM unigator.User WHERE user_id=?`, [user_id], (err, results) => {
             if (err) {
+                console.log(err)
                 return reject(err);
             }
             return resolve(results)
         })
-    });
-}
-
-unigatordb.eventsByCategory = (category) => {
-    return new Promise((resolve, reject) => {
-        db.query(`SELECT event.* FROM unigator.Event event 
-        INNER JOIN unigator.EventCategory eventCategory ON event.event_id = eventCategory.event_id 
-        INNER JOIN unigator.Category category ON eventCategory.category_id=category.category_id 
-        WHERE category.type= ?`,
-            [category], (err, results) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(results)
-            })
-    });
+    }); 
 }
 
 unigatordb.rsvpList = (event_id) => {
@@ -278,7 +344,8 @@ unigatordb.loginUser = (email, password) => {
                 return reject({ error: "Invalid Email or password" });
             }
             user = await unigatordb.getUserInfo(result[0].acc_id)
-            let token = jwt.sign({ user_id: user[0].user_id }, 'CookieSecretUserAuth', { expiresIn: 86400 });
+            console.log(user)
+            let token = jwt.sign({ user_id: user.user_id }, 'CookieSecretUserAuth', { expiresIn: 86400 });
             return resolve({
                 message: "User login successfully",
                 newToken: token
@@ -302,14 +369,15 @@ unigatordb.getUserInfoFromUserId = (user_id) => {
     return new Promise((resolve, reject) => {
         db.query(`SELECT * FROM unigator.User WHERE user_id = ?`, [user_id], (err, results) => {
             if (err) {
-                return reject(err);
+                return reject(err); 
             }
+            console.log(results)
             return resolve(results[0]);
         })
     });
 }
 
-//beginnig of save event stuff.
+//beginning of save event stuff.
 
 unigatordb.saveThisEvent = (user_id, event_id) => {
     return new Promise((resolve, reject) => {
@@ -355,6 +423,7 @@ unigatordb.getSavedEvents = (user_id) => {   //no check if it exists or not
     });
 }
 //end of save event stuff.
+// End of User functions
 
 //beginning of Point Shop functions.
 

@@ -47,6 +47,25 @@ app.post('/createEvent', async (req, res) => {
   }
 })
 
+app.get('/eventDetails', async (req, res) => {
+  try {
+    let result;
+    let event_id = req.body.event_id;
+    let user_id = req.user_id;
+
+    if (user_id === null && event_id !== null) {
+      result = await unigatordb.eventDetails(event_id);
+    }
+    if (user_id !== null && event_id !== null) {
+      result = await unigatordb.eventDetails(event_id);
+      res.json(result);
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500);
+  }
+})
+
 app.post('/events', async (req, res) => {
   try {
     let result;
@@ -182,6 +201,26 @@ app.post('/register', async (req, res) => {
   } catch (e) {
     console.log(e);
     res.status(403).send(e);
+  }
+});
+
+app.get('/profileInfo', async (req, res) => { //used to display point shop
+  try {
+    let result;
+    let user_id = req.user_id;
+    let user_id_other = request.body.user_id;
+
+    if (user_id !== null && user_id_other === null) {
+      result = await unigatordb.userProfile(user_id);
+    } else if (user_id === null && user_id_other !== null) {
+      result = await unigatordb.userProfile(user_id_other);
+    } else if (user_id === null && user_id_other === null){
+      throw {error: "No User specified for requested data"}
+    }
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(500);
   }
 });
 
