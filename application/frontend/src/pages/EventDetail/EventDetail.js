@@ -11,19 +11,53 @@ import {
     Carousel,
     Jumbotron,
 } from "react-bootstrap";
+import axios from "axios";
 import styled from "styled-components";
 
-class EventDetail extends Component {
-    render() {
+const EventDetail = () => {
+    const [eventDetail, setEventDetail] = React.useState({});
+    const [rsvp, setRsvp] = React.useState({});
+
+    const handleEventDetail = (e) => {
+        e.preventDefault();
+        axios
+            .get(`/eventDetailInfo`, {})
+            .then((res) => {
+                console.log(res);
+                console.log(res.data);
+                setEventDetail(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+    }
+
+    const handleRsvp = (e) => {
+        e.preventDefault();
+        axios
+            .get(`/rsvp`, {})
+            .then((res) => {
+                console.log(res);
+                console.log(res.data);
+                setRsvp(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
+    }
+
+
         return (
             <Container>
                 <h1 style={{textAlign: 'center'}}>Event Details</h1>
                 <Row>
                     <Col xs lg="5">
                         <Jumbotron>
-                            <h1>Mobile dev 101</h1>
+                            <h1>{eventDetail.name}PLACEHOLDER</h1>
                             <p style={{fontWeight: 'bold'}}>
-                                4/7/2020 &emsp; 9:20 AM &emsp; Towers Conference Center
+                               {eventDetail.date} PLACEHOLDER&emsp; {eventDetail.time}PLACEHOLDER &emsp; {eventDetail.location}PLACEHOLDER
                             </p>
                             <Row>
                                 <Col sm={8}>
@@ -37,7 +71,7 @@ class EventDetail extends Component {
                         </Jumbotron>
                         <Jumbotron>
                             <h3>Event Description</h3>
-                            <p>Lets learn how to create a mobile app</p>
+                            <p>{eventDetail.desc}PLACEHOLDER</p>
                         </Jumbotron>
                     </Col>
                     <Col xs lg="7">
@@ -63,7 +97,7 @@ class EventDetail extends Component {
                 {/*<p>Lets learn how to create a mobile app</p>*/}
             </Container>
         );
-    }
+
 }
 
 export default EventDetail;

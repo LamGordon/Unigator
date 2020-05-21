@@ -7,17 +7,36 @@ import {
     Container,
     Jumbotron,
 } from "react-bootstrap";
+import axios from "axios";
 
-class Profile extends Component {
 
-    render() {
+
+const Profile = () => {
+    const [userInfo, setUserInfo] = React.useState({});
+
+    const handleProfile = (e) => {
+        e.preventDefault();
+            axios
+                .get(`/profileInfo`, {})
+                .then((res) => {
+                    console.log(res);
+                    console.log(res.data);
+                    setUserInfo(res.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+
+    }
+
+
         return (
             <Container>
                 <h1 style={{ textAlign: 'center' }}>My Profile</h1>
                 <Row>
                     <Col xs lg="5">
                         <Jumbotron>
-                            <h1>Welcome, JohnSmith123!</h1>
+                              <h1>{userInfo.name}</h1>
                             <img src="https://i.imgur.com/aoCg9r0.png" />
                             <a style={{ fontWeight: 'bold' }}>Share your profile: </a>
                             <a href="https://www.facebook.com">
@@ -34,21 +53,21 @@ class Profile extends Component {
                     <Col xs lg="7">
                         <Jumbotron>
                             <h4>User Information</h4>
-                            <p>Username: JohnSmith123</p>
-                            <p>Email: jsmith@mail.sfsu.edu</p>
-                            <p>School Year: Class of 2021</p>
-                            <p>Points Accumulated: 1300</p>
+                            {/*<p>Email: jsmith@mail.sfsu.edu{userInfo.email}</p>*/}
+                            <p>School Year: {userInfo.year}</p>
+                            <p>Points Accumulated: {userInfo.points}</p>
                             <p>Preferred Categories: Technology, Recreation</p>
                             <p>Description: Hi, I am JohnSmith123. I like pizza.</p>
                         </Jumbotron>
                         <Jumbotron>
                             <h4>My Events</h4>
+                            <p></p>
                         </Jumbotron>
                     </Col>
                 </Row>
             </Container>
         );
-    }
+
 }
 
 export default Profile;
