@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import "../../App.css";
 import {
     Dropdown,
@@ -17,6 +17,8 @@ import styled from "styled-components";
 import axios from "axios";
 import logoImage from '../../assets/unigatorLogo.png';
 
+import DatePicker from 'react-date-picker';
+import TimePicker from 'react-time-picker';
 
 const is_production = process.env.REACT_APP_IS_PRODUCTION;
 axios.defaults.baseURL = "http://13.52.231.107:3003";
@@ -63,18 +65,30 @@ class Navibar extends React.Component {
             signupIsOpen: false,
             createEventIsOpen: false,
             isLoggedIn: false,
+            eventName: '',
+            eventLocation: '',
+            eventDescription: '',
+            createCategory: "Categories",
+            time: '10:00',
+            date: new Date(),
+            loginToken: '',
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.handleSignup = this.handleSignup.bind(this);
         this.handleLogin = this.handleLogin.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
+        this.handleCreateEvent = this.handleCreateEvent.bind(this);
     }
 
     handleInput(e) {
         this.setState({ [e.target.name]: e.target.value });
         console.log("handle input called")
     }
+
+    dateChange = date => this.setState({ date })
+
+    timeChange = time => this.setState({ time })
 
     handleSubmit(e) {
 
@@ -141,10 +155,41 @@ class Navibar extends React.Component {
         }
     }
 
+    handleCreateEvent(e) {
+        const { eventName, eventLocation, eventDescription, createCategory, time, date, loginToken, isLoggedIn } = this.state;
+        if ((eventName !== '' && eventLocation !== '' && eventDescription !== '' && createCategory !== '')) {
+            if (isLoggedIn) {
+                axios
+                    .post(`/createEvent`, {
+                        // user_id: loginToken,
+                        name: eventName,
+                        date: date,
+                        time: time,
+                        description: eventDescription,
+                        location: eventLocation
+                    })
+                    .then((res) => {
+                        console.log(res);
+                        console.log(res.data);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+                this.setState({
+                    createEventIsOpen: !this.state.createEventIsOpen
+                })
+            }
+            // else {
+            //     console.log("not logged in")
+            // }
+        } else {
+            console.log("Incomplete creat event form")
+        }
+    }
+
     handleLogin(e) {
         const { loginEmail, loginPassword } = this.state;
         e.preventDefault();
-        console.log("inside handleLogin")
         if (loginEmail !== '' && loginPassword !== '') {
             axios
                 .post(`/login`, { email: loginEmail, password: loginPassword })
@@ -152,7 +197,8 @@ class Navibar extends React.Component {
                     console.log(res);
                     console.log(res.data);
                     this.setState({
-                        isLoggedIn: true
+                        isLoggedIn: true,
+                        loginToken: res.data.result.newToken
                     })
                 })
                 .catch((err) => {
@@ -169,7 +215,6 @@ class Navibar extends React.Component {
 
     handleLogout(e) {
         const { isLoggedIn } = this.state;
-        // e.preventDefault();
 
         if (isLoggedIn) {
             axios
@@ -189,10 +234,14 @@ class Navibar extends React.Component {
         }
     }
 
-
     onClickHandler = (category) => {
         const value = category.target.getAttribute("value");
         this.setState({ category: value });
+    };
+
+    clickHandler = (createCategory) => {
+        const value = createCategory.target.getAttribute("value");
+        this.setState({ createCategory: value });
     };
 
     toggleLoginModal() {
@@ -364,6 +413,71 @@ class Navibar extends React.Component {
         )
     }
 
+    renderCreateEvent = () => {
+        const {createCategory} = this.state;
+        console.log(this.state);
+        return (
+            <Modal className="Create-Event" show={this.state.createEventIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
+                <Modal.Header closeButton onClick={this.toggleCreateEventModal.bind(this)}>
+                    <Modal.Title>Create Event</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Group controlId="form">
+                            <Form.Label>Event Name</Form.Label>
+                            <Form.Control name="eventName" onChange={this.handleInput} placeholder="Name of the event" />
+                        </Form.Group>
+                        <Form.Group controlId="form">
+                            <Form.Label>Location</Form.Label>
+                            <Form.Control name="eventLocation" onChange={this.handleInput} placeholder="Location of the event" />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Date</Form.Label>
+                            <DatePicker name="date" onChange={this.dateChange} value={this.state.date}/>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Time</Form.Label>
+                            <TimePicker name="time" onChange={this.timeChange} value={this.state.time}/>
+                        </Form.Group>
+                        <Form.Group controlId="form">
+                            <Form.Label>Category</Form.Label>
+                            <Dropdown className="my-dropdown">
+                                <Dropdown.Toggle id="dropdown-basic">
+                                    {createCategory}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item value='Categories' onClick={this.clickHandler}>
+                                        All Categories
+                                    </Dropdown.Item>
+                                    <Dropdown.Item value='Technology' onClick={this.clickHandler}>
+                                        Technology
+                                    </Dropdown.Item>
+                                    <Dropdown.Item value='Education' onClick={this.clickHandler}>
+                                        Education
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </Form.Group>
+                        <Form.Group controlId="form">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control name="eventDescription" onChange={this.handleInput} as="textarea" rows="3" placeholder="Enter description..." />
+                        </Form.Group>
+                    </Form>
+                    <div className="mb-3">
+                        <Form.File id="formcheck-api-regular">
+                            <Form.File.Label>Choose picture</Form.File.Label>
+                            <Form.File.Input />
+                        </Form.File>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={this.handleCreateEvent}>Submit Event</Button>
+                    <Button variant="secondary" onClick={this.toggleCreateEventModal.bind(this)}>Cancel</Button>
+                </Modal.Footer>
+            </Modal>
+        )
+    }
+
     renderTermsAndAgreement = () => {
         return (
             <Modal show={this.state.termsAndAgreementIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
@@ -513,48 +627,6 @@ class Navibar extends React.Component {
         )
     }
 
-    renderCreateEvent = () => {
-        return (
-            <Modal className="Create-Event" show={this.state.createEventIsOpen} aria-labelledby="contained-modal-title-vcenter" centered>
-                <Modal.Header closeButton onClick={this.toggleCreateEventModal.bind(this)}>
-                    <Modal.Title>Create Event</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formBasicUsername">
-                            <Form.Label>Event Name</Form.Label>
-                            <Form.Control type="email" placeholder="Name of the event" />
-                        </Form.Group>
-                        <Form.Group controlId="formBasicUsername">
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control type="username" placeholder="Enter description..." />
-                        </Form.Group>
-                        <Form.Group controlId="formBasicPassword">
-                            <Form.Label>Location</Form.Label>
-                            <Form.Control type="password" placeholder="Enter Location..." />
-                        </Form.Group>
-                        <Form.Group controlId="formBasicCheckbox">
-                            <Form.Label>Admission</Form.Label>
-                            <Form.Check type="checkbox" label="Free" />
-                            <Form.Check type="checkbox" label="Paid" />
-                            <Form.Control type="basic" placeholder="Enter Price..." />
-                        </Form.Group>
-                    </Form>
-                    <div className="mb-3">
-                        <Form.File id="formcheck-api-regular">
-                            <Form.File.Label>Choose picture</Form.File.Label>
-                            <Form.File.Input />
-                        </Form.File>
-                    </div>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary">Submit Event</Button>
-                    <Button variant="secondary" onClick={this.toggleCreateEventModal.bind(this)}>Cancel</Button>
-                </Modal.Footer>
-            </Modal>
-        )
-    }
-
     render() {
         const { category, events, isLoggedIn } = this.state;
         return (
@@ -585,13 +657,13 @@ class Navibar extends React.Component {
                                     <Dropdown.Menu>
                                         <Dropdown.Item value='Categories' onClick={this.onClickHandler}>
                                             All Categories
-                      </Dropdown.Item>
+                                        </Dropdown.Item>
                                         <Dropdown.Item value='Technology' onClick={this.onClickHandler}>
                                             Technology
-                      </Dropdown.Item>
+                                        </Dropdown.Item>
                                         <Dropdown.Item value='Education' onClick={this.onClickHandler}>
                                             Education
-                      </Dropdown.Item>
+                                        </Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
                             </Form>
@@ -607,6 +679,7 @@ class Navibar extends React.Component {
                                 </>
                                 :
                                 <>
+                                    <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>
                                     <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
                                     <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
                                 </>
@@ -617,7 +690,7 @@ class Navibar extends React.Component {
                     {this.renderSignUp()}
                     {this.renderCreateEvent()}
                     {this.renderTermsAndAgreement()}
-                    {/* {this.renderEvents()} */}
+                     {/*{this.renderEvents()}*/}
 
                 </div>
             </Router>
