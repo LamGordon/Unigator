@@ -252,6 +252,58 @@ app.get('/profileInfo', async (req, res) => { //used to display point shop
   }
 });
 
+//beginning of save event endpoints
+app.post('/saveEvent', async (req, res) => {    //connect this directly to an event or event details page as a button or whatnot.
+  try {
+    let result;
+    let event_id = req.body.event_id;
+    let user_id = req.user_id;
+
+    if (user_id == null) {
+      throw { error: "You are not logged in, can't save an event." }
+    }
+    result = await unigatordb.saveThisEvent(user_id, event_id);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+app.post('/unsaveEvent', async (req, res) => {    //connect this to the getSavedEvents endpoint, as there's no check for unsaving it if it does not exist.
+  try {
+    let result;
+    let event_id = req.body.event_id;
+    let user_id = req.user_id;
+
+    if (user_id == null) {
+      throw { error: "You are not logged in, can't un-save an event." }
+    }
+    result = await unigatordb.unsaveThisEvent(user_id, event_id);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+
+app.get('/getSavedEvents', async (req, res) => {  //this gets a list of (event details) of all saved events by a user. Connect unsave to here.
+  try {
+    let result;
+    let user_id = req.user_id;
+
+    if (user_id == null) {
+      throw { error: "You are not logged in, can't view your saved events list." }
+    }
+    result = await unigatordb.getSavedEvents(user_id);
+    res.json(result);
+  } catch (e) {
+    console.log(e);
+    res.status(403).send(e);
+  }
+});
+//end of save event endpoints
+
 //beginning of Point Shop endpoints.
 
 app.get('/pointshop', async (req, res) => { //used to display point shop
@@ -408,5 +460,80 @@ app.post('/deleteUserAccount', async (req, res) => {  //DELETES all user info an
   }
 });
 //end of Administrator endpoints.
+
+//beginning of host endpoints
+
+app.get('/toggleHostPoints', async (req, res) => {    //toggles enabled_hp in Host table
+  try {
+    let result;
+    let user_id = req.user_id;
+    if (user_id != null) {
+      result = await unigatordb.toggleHostPoints(user_id);
+      res.json(result);
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot get purchased items." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
+
+app.get('/viewHostedEvents', async (req, res) => {    //gets list of events from this host.
+  try {
+    let result;
+    let user_id = req.user_id;
+    if (user_id != null) {
+      result = await unigatordb.viewHostedEvents(user_id);
+      res.json(result);
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
+app.get('/viewHostPointsHost', async (req, res) => {    //toggles enabled_hp in Host table
+  try {
+    let result;
+    let user_id = req.user_id;
+    if (user_id != null) {
+      result = await unigatordb.viewHostPointsHost(user_id);
+      res.json(result);
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot view who has your host points." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+
+app.post('/updateHostPoints', async (req, res) => {  //used to buy items from pointshop
+  try {
+    let result;
+    let user_id = req.user_id;
+    let target_user_id = req.body.user_id;
+    let update_value = req.body.update_value;
+    if (user_id != null) {
+      result = await unigatordb.updateHostPointBalance(user_id, target_user_id, update_value);
+      res.json({ message: result.message });
+    }
+    if (user_id == null) {
+      throw { error: "User is not logged in, cannot update host points." };
+    }
+  } catch (e) {
+    console.log(e);
+    res.sendStatus(400);
+  }
+});
+//end of host endpoints
+
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
