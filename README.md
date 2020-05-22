@@ -1,6 +1,6 @@
 # csc648 Repository
 
-## http://54.193.95.217:3006/
+## http://13.52.231.107:3006/
 
 ## Please do the following steps before completing Milestone 0.
 
