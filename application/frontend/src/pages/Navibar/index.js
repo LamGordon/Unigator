@@ -677,7 +677,6 @@ class Navibar extends React.Component {
                                 </>
                                 :
                                 <>
-                                    <Button variant="outline-primary" onClick={this.toggleCreateEventModal.bind(this)}>Create Event</Button>
                                     <Button variant="outline-primary" onClick={this.toggleLoginModal.bind(this)}>Log in</Button>
                                     <Button variant="outline-primary" onClick={this.toggleSignupModal.bind(this)}>Sign Up</Button>
                                 </>
