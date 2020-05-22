@@ -25,7 +25,7 @@ class Routes extends React.Component {
           <Navibar />
 
           <Switch>
-            <Route path="/" component={Events} exact />
+            <Route path="/home" component={Events} exact />
             <Route path="/profile" component={Profile} />
             <Route path="/eventdetail" component={EventDetail} />
             <Route path="/store" component={Store} />
