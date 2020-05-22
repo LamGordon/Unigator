@@ -71,7 +71,7 @@ class Navibar extends React.Component {
             createCategory: "Categories",
             time: '10:00',
             date: new Date(),
-            loginToken: '',
+            auth: '',
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleInput = this.handleInput.bind(this);
@@ -93,12 +93,12 @@ class Navibar extends React.Component {
     handleSubmit(e) {
 
         console.log("handle submit called")
-        const { searchEvent, category } = this.state;
+        const { searchEvent, category, auth } = this.state;
 
         e.preventDefault();
         if (category === "Categories") {
             axios
-                .post(`/events`, { name: searchEvent })
+                .post(`/events`, { name: searchEvent, auth: auth })
                 .then((res) => {
                     console.log("\t\tResponse:", res.data)
                     this.setState({ events: res.data });
@@ -113,6 +113,7 @@ class Navibar extends React.Component {
                 .get(`/events/${category}`, {
                     params: {
                         name: searchEvent,
+                        auth: auth
                     },
                 })
                 .then((res) => {
@@ -156,12 +157,12 @@ class Navibar extends React.Component {
     }
 
     handleCreateEvent(e) {
-        const { eventName, eventLocation, eventDescription, createCategory, time, date, loginToken, isLoggedIn } = this.state;
+        const { auth, eventName, eventLocation, eventDescription, createCategory, time, date, isLoggedIn } = this.state;
         if ((eventName !== '' && eventLocation !== '' && eventDescription !== '' && createCategory !== '')) {
             if (isLoggedIn) {
                 axios
                     .post(`/createEvent`, {
-                        // user_id: loginToken,
+                        auth: auth,
                         name: eventName,
                         date: date,
                         time: time,
@@ -179,9 +180,6 @@ class Navibar extends React.Component {
                     createEventIsOpen: !this.state.createEventIsOpen
                 })
             }
-            // else {
-            //     console.log("not logged in")
-            // }
         } else {
             console.log("Incomplete creat event form")
         }
@@ -198,7 +196,7 @@ class Navibar extends React.Component {
                     console.log(res.data);
                     this.setState({
                         isLoggedIn: true,
-                        loginToken: res.data.result.newToken
+                        auth: res.data.auth
                     })
                 })
                 .catch((err) => {
